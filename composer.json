@@ -35,7 +35,7 @@
         "php": "^8.4.1 || ^8.5",
         "illuminate/contracts": "^13.0",
         "illuminate/support": "^13.0",
-        "laranail/db-console": "^1.0",
+        "laranail/db-console": "^0.1",
         "livewire/livewire": "^3.5.19 || ^4.0",
         "livewire/flux": "^2.0"
     },
@@ -50,15 +50,6 @@
         "laravel/pint": "^1.18",
         "rector/rector": "^2.0"
     },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../db-console",
-            "options": {
-                "symlink": true
-            }
-        }
-    ],
     "autoload": {
         "psr-4": {
             "Simtabi\\Laranail\\DBConsoleWebUI\\": "src/"
