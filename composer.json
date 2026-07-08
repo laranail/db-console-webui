@@ -1,7 +1,16 @@
 {
     "name": "laranail/db-console-webui",
     "description": "Thin Livewire + Flux web UI for laranail/db-console — all UI, zero business logic.",
-    "keywords": ["laravel", "laranail", "livewire", "flux", "database", "admin", "ui", "db-console"],
+    "keywords": [
+        "laravel",
+        "laranail",
+        "livewire",
+        "flux",
+        "database",
+        "admin",
+        "ui",
+        "db-console"
+    ],
     "homepage": "https://opensource.simtabi.com/products/laranail/db-console-webui",
     "license": "MIT",
     "authors": [
@@ -20,7 +29,7 @@
     "support": {
         "issues": "https://github.com/laranail/db-console-webui/issues",
         "source": "https://github.com/laranail/db-console-webui",
-        "docs": "https://opensource.simtabi.com/documentation/laranail/db-console-webui"
+        "docs": "https://opensource.simtabi.com/documentation/laranail/db-console-webui/"
     },
     "require": {
         "php": "^8.4.1 || ^8.5",
@@ -45,7 +54,9 @@
         {
             "type": "path",
             "url": "../db-console",
-            "options": { "symlink": true }
+            "options": {
+                "symlink": true
+            }
         }
     ],
     "autoload": {
@@ -60,7 +71,11 @@
     },
     "scripts": {
         "test": "pest",
-        "lint": ["@pint", "@phpstan", "@rector"],
+        "lint": [
+            "@pint",
+            "@phpstan",
+            "@rector"
+        ],
         "pint": "pint",
         "phpstan": "phpstan analyse",
         "rector": "rector process --dry-run"
