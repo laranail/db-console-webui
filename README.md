@@ -50,12 +50,12 @@ Pre-1.0, tracking `laranail/db-console`. Breaking changes are in [UPGRADING.md](
 ## Local development
 
 ```bash
-composer install
-vendor/bin/pest       # component + boundary tests (skips live engines without Docker)
+composer install      # resolves laranail/db-console from Packagist
+vendor/bin/pest       # component + boundary tests
 composer lint         # Pint, PHPStan, Rector
 ```
 
-The sibling `laranail/db-console` is consumed as a Composer path repository (`../db-console`) during development.
+To develop against unreleased `laranail/db-console` changes, add a local path repository for it (`composer config repositories.db-console path ../db-console`) — this is a local-only override and is not committed.
 
 ## Sister packages
 
