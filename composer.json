@@ -1,0 +1,110 @@
+{
+    "name": "laranail/db-console-webui",
+    "description": "Thin Livewire + Flux web UI for laranail/db-console \u2014 all UI, zero business logic.",
+    "keywords": [
+        "laravel",
+        "laranail",
+        "livewire",
+        "flux",
+        "database",
+        "admin",
+        "ui",
+        "db-console"
+    ],
+    "homepage": "https://opensource.simtabi.com/products/laranail/db-console-webui",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Simtabi LLC",
+            "email": "opensource@simtabi.com",
+            "homepage": "https://simtabi.com",
+            "role": "Organization"
+        },
+        {
+            "name": "Imani Manyara",
+            "email": "imani@simtabi.com",
+            "role": "Maintainer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/laranail/db-console-webui/issues",
+        "source": "https://github.com/laranail/db-console-webui",
+        "docs": "https://opensource.simtabi.com/documentation/laranail/db-console-webui/"
+    },
+    "require": {
+        "php": "^8.4.1 || ^8.5",
+        "illuminate/contracts": "^13.0",
+        "illuminate/support": "^13.0",
+        "laranail/db-console": "^0.1",
+        "livewire/livewire": "^3.5.19 || ^4.0",
+        "livewire/flux": "^2.0"
+    },
+    "require-dev": {
+        "laranail/package-tools": "^0.1",
+        "orchestra/testbench": "^11.0",
+        "pestphp/pest": "^4.0",
+        "pestphp/pest-plugin-arch": "^4.0",
+        "pestphp/pest-plugin-laravel": "^4.0",
+        "larastan/larastan": "^3.0",
+        "phpstan/phpstan": "^2.0",
+        "laravel/pint": "^1.18",
+        "rector/rector": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Simtabi\\Laranail\\DBConsoleWebUI\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Simtabi\\Laranail\\DBConsoleWebUI\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "pest",
+        "lint": [
+            "@pint",
+            "@phpstan",
+            "@rector"
+        ],
+        "pint": "pint",
+        "phpstan": "phpstan analyse",
+        "rector": "rector process --dry-run"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Simtabi\\Laranail\\DBConsoleWebUI\\Providers\\DBConsoleWebUIServiceProvider"
+            ]
+        },
+        "branch-alias": {
+            "dev-main": "0.1.x-dev"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/laranail/console"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/laranail/enumerator"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/laranail/package-tools"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/laranail/db-console"
+        }
+    ]
+}

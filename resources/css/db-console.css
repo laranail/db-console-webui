@@ -1,0 +1,5 @@
+/* db-console-webui — Tailwind 4 + Flux entrypoint.
+   Import this into your app's CSS build (or publish it) to style the console. */
+@import 'tailwindcss';
+
+/* Flux ships its own styles; this file is the seam for host-app overrides. */
