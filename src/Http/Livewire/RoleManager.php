@@ -32,6 +32,6 @@ final class RoleManager extends Component
             ];
         }
 
-        return \Illuminate\Support\Facades\View::make('db-console-webui::livewire.role-manager', ['roles' => $roles]);
+        return \Illuminate\Support\Facades\View::make('laranail-db-console-webui::livewire.role-manager', ['roles' => $roles]);
     }
 }

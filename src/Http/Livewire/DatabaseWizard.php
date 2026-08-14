@@ -64,7 +64,7 @@ final class DatabaseWizard extends Component
                 new DbName($this->name),
                 new Charset($this->charset),
             );
-            $this->flash = __('db-console-webui::ui.created');
+            $this->flash = __('laranail-db-console-webui::ui.created');
             $this->reset('name');
         } catch (DBConsoleException $e) {
             $this->error = $e->userMessage();
@@ -78,7 +78,7 @@ final class DatabaseWizard extends Component
 
         try {
             app(DatabaseManager::class)->drop($this->server(), new DbName($this->confirmName));
-            $this->flash = __('db-console-webui::ui.dropped');
+            $this->flash = __('laranail-db-console-webui::ui.dropped');
             $this->reset('confirmName');
         } catch (DBConsoleException $e) {
             $this->error = $e->userMessage();
@@ -94,7 +94,7 @@ final class DatabaseWizard extends Component
             $this->error ??= $e->userMessage();
         }
 
-        return \Illuminate\Support\Facades\View::make('db-console-webui::livewire.database-wizard', ['databases' => $databases]);
+        return \Illuminate\Support\Facades\View::make('laranail-db-console-webui::livewire.database-wizard', ['databases' => $databases]);
     }
 
     private function server(): string

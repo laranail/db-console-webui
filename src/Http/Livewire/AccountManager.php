@@ -59,7 +59,7 @@ final class AccountManager extends Component
                 null,   // generate a strong password
             );
             $this->generatedPassword = $result->takeGeneratedPassword();
-            $this->flash = __('db-console-webui::ui.created');
+            $this->flash = __('laranail-db-console-webui::ui.created');
             $this->reset('username');
         } catch (DBConsoleException $e) {
             $this->error = $e->userMessage();
@@ -75,7 +75,7 @@ final class AccountManager extends Component
             $this->error ??= $e->userMessage();
         }
 
-        return \Illuminate\Support\Facades\View::make('db-console-webui::livewire.account-manager', ['accounts' => $accounts]);
+        return \Illuminate\Support\Facades\View::make('laranail-db-console-webui::livewire.account-manager', ['accounts' => $accounts]);
     }
 
     private function server(): string

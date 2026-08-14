@@ -48,6 +48,6 @@ final class ServerSwitcher extends Component
             $this->active = $servers[0]['name'];
         }
 
-        return \Illuminate\Support\Facades\View::make('db-console-webui::livewire.server-switcher', ['servers' => $servers]);
+        return \Illuminate\Support\Facades\View::make('laranail-db-console-webui::livewire.server-switcher', ['servers' => $servers]);
     }
 }

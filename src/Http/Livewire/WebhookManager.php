@@ -65,7 +65,7 @@ final class WebhookManager extends Component
 
     public function render(): View
     {
-        return \Illuminate\Support\Facades\View::make('db-console-webui::livewire.webhook-manager', [
+        return \Illuminate\Support\Facades\View::make('laranail-db-console-webui::livewire.webhook-manager', [
             'subscriptions' => WebhookSubscription::query()->get(),
             'eventTypes' => array_map(static fn (WebhookEvent $e): string => $e->value, WebhookEvent::cases()),
         ]);

@@ -1,5 +1,5 @@
 <div>
-    <flux:heading size="lg">{{ __('db-console-webui::ui.webhooks') }}</flux:heading>
+    <flux:heading size="lg">{{ __('laranail-db-console-webui::ui.webhooks') }}</flux:heading>
 
     @if ($error)<flux:callout variant="danger">{{ $error }}</flux:callout>@endif
     @if ($signingSecret)

@@ -35,7 +35,7 @@ final class Dashboard extends Component
             }
         }
 
-        return \Illuminate\Support\Facades\View::make('db-console-webui::livewire.dashboard', [
+        return \Illuminate\Support\Facades\View::make('laranail-db-console-webui::livewire.dashboard', [
             'server' => $server,
             'databases' => $databases,
             'error' => $error,

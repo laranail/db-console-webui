@@ -32,7 +32,7 @@ final class DBConsoleWebUIServiceProvider extends PackageServiceProvider
         $package
             ->name('laranail/db-console-webui')
             ->hasConfigFile('db-console-webui')
-            ->hasViews('db-console-webui')
+            ->hasViews('laranail-db-console-webui')
             ->hasTranslations('db-console-webui')
             ->hasRoutesWhen('laranail.db-console-webui.enabled', 'web')
             ->hasAboutSection(
