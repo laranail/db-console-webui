@@ -11,7 +11,7 @@ use Orchestra\Testbench\TestCase as Orchestra;
 use Simtabi\Laranail\Console\Providers\ConsoleServiceProvider;
 use Simtabi\Laranail\DBConsole\Providers\DBConsoleServiceProvider;
 use Simtabi\Laranail\DBConsoleWebUI\Providers\DBConsoleWebUIServiceProvider;
-use Simtabi\Laranail\Enumerator\EnumeratorServiceProvider;
+use Simtabi\Laranail\Enumerator\Providers\EnumeratorServiceProvider;
 use Simtabi\Laranail\Package\Tools\Providers\PackageToolsServiceProvider;
 
 abstract class TestCase extends Orchestra
