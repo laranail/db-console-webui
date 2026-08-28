@@ -67,9 +67,11 @@
             "@phpstan",
             "@rector"
         ],
-        "pint": "pint",
+        "pint": "vendor/bin/pint --test --config vendor/laranail/package-tools/pint.json",
         "phpstan": "phpstan analyse",
-        "rector": "rector process --dry-run"
+        "rector": "rector process --dry-run",
+        "pint-fix": "vendor/bin/pint --parallel --config vendor/laranail/package-tools/pint.json",
+        "format": "@pint-fix"
     },
     "extra": {
         "laravel": {

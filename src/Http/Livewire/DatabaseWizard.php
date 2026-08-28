@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\DBConsoleWebUI\Http\Livewire;
 
-use Illuminate\Contracts\View\View;
+use Livewire\Component;
 use Livewire\Attributes\Session;
 use Livewire\Attributes\Validate;
-use Livewire\Component;
-use Simtabi\Laranail\DBConsole\Domain\Charset;
+use Illuminate\Contracts\View\View;
 use Simtabi\Laranail\DBConsole\Domain\DbName;
-use Simtabi\Laranail\DBConsole\Exceptions\DBConsoleException;
+use Simtabi\Laranail\DBConsole\Domain\Charset;
 use Simtabi\Laranail\DBConsole\Servers\ServerRegistry;
-use Simtabi\Laranail\DBConsole\Services\DatabaseManager;
-use Simtabi\Laranail\DBConsole\Validation\Requests\CreateDatabaseRequest;
-use Simtabi\Laranail\DBConsole\Validation\Requests\DropDatabaseRequest;
 use Simtabi\Laranail\DBConsole\Validation\RuleProvider;
+use Simtabi\Laranail\DBConsole\Services\DatabaseManager;
+use Simtabi\Laranail\DBConsole\Exceptions\DBConsoleException;
+use Simtabi\Laranail\DBConsole\Validation\Requests\DropDatabaseRequest;
+use Simtabi\Laranail\DBConsole\Validation\Requests\CreateDatabaseRequest;
 
 /**
  * Create and drop databases on the active server. Validation is the CORE's:
@@ -38,20 +38,6 @@ final class DatabaseWizard extends Component
     public ?string $flash = null;
 
     public ?string $error = null;
-
-    /**
-     * Validation rules pulled from the core's shared FormRequests — never
-     * declared here. This is the boundary the architecture test enforces.
-     *
-     * @return array<string, mixed>
-     */
-    protected function rules(): array
-    {
-        return [
-            'name' => RuleProvider::field(CreateDatabaseRequest::class, 'name'),
-            'confirmName' => RuleProvider::field(DropDatabaseRequest::class, 'name'),
-        ];
-    }
 
     public function create(): void
     {
@@ -95,6 +81,20 @@ final class DatabaseWizard extends Component
         }
 
         return \Illuminate\Support\Facades\View::make('laranail-db-console-webui::livewire.database-wizard', ['databases' => $databases]);
+    }
+
+    /**
+     * Validation rules pulled from the core's shared FormRequests — never
+     * declared here. This is the boundary the architecture test enforces.
+     *
+     * @return array<string, mixed>
+     */
+    protected function rules(): array
+    {
+        return [
+            'name'        => RuleProvider::field(CreateDatabaseRequest::class, 'name'),
+            'confirmName' => RuleProvider::field(DropDatabaseRequest::class, 'name'),
+        ];
     }
 
     private function server(): string

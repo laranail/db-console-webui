@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\DBConsoleWebUI\Http\Livewire;
 
-use Illuminate\Contracts\View\View;
-use Livewire\Attributes\Session;
 use Livewire\Component;
+use Livewire\Attributes\Session;
+use Illuminate\Contracts\View\View;
 use Simtabi\Laranail\DBConsole\Domain\Host;
 use Simtabi\Laranail\DBConsole\Domain\Username;
-use Simtabi\Laranail\DBConsole\Exceptions\DBConsoleException;
 use Simtabi\Laranail\DBConsole\Servers\ServerRegistry;
-use Simtabi\Laranail\DBConsole\Services\AccountManager as AccountService;
-use Simtabi\Laranail\DBConsole\Validation\Requests\CreateAccountRequest;
 use Simtabi\Laranail\DBConsole\Validation\RuleProvider;
+use Simtabi\Laranail\DBConsole\Exceptions\DBConsoleException;
+use Simtabi\Laranail\DBConsole\Validation\Requests\CreateAccountRequest;
+use Simtabi\Laranail\DBConsole\Services\AccountManager as AccountService;
 
 /**
  * Create and drop database accounts on the active server. Validation comes
@@ -34,17 +34,6 @@ final class AccountManager extends Component
     public ?string $flash = null;
 
     public ?string $error = null;
-
-    /**
-     * @return array<string, mixed>
-     */
-    protected function rules(): array
-    {
-        return [
-            'username' => RuleProvider::field(CreateAccountRequest::class, 'username'),
-            'host' => RuleProvider::field(CreateAccountRequest::class, 'host'),
-        ];
-    }
 
     public function create(): void
     {
@@ -76,6 +65,17 @@ final class AccountManager extends Component
         }
 
         return \Illuminate\Support\Facades\View::make('laranail-db-console-webui::livewire.account-manager', ['accounts' => $accounts]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function rules(): array
+    {
+        return [
+            'username' => RuleProvider::field(CreateAccountRequest::class, 'username'),
+            'host'     => RuleProvider::field(CreateAccountRequest::class, 'host'),
+        ];
     }
 
     private function server(): string

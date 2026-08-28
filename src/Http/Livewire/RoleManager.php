@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\DBConsoleWebUI\Http\Livewire;
 
-use Illuminate\Contracts\View\View;
 use Livewire\Component;
-use Simtabi\Laranail\DBConsole\Access\Contracts\RbacDriver;
+use Illuminate\Contracts\View\View;
 use Simtabi\Laranail\DBConsole\Enums\ConsoleRole;
+use Simtabi\Laranail\DBConsole\Access\Contracts\RbacDriver;
 
 /**
  * Read-only view of the console roles and their composed permissions. All
@@ -23,8 +23,8 @@ final class RoleManager extends Component
         $roles = [];
         foreach (ConsoleRole::cases() as $role) {
             $roles[] = [
-                'name' => $role->value,
-                'label' => $role->label(),
+                'name'        => $role->value,
+                'label'       => $role->label(),
                 'permissions' => array_map(
                     static fn ($p): string => $p->value,
                     $driver->permissionsForRole($role->value),
