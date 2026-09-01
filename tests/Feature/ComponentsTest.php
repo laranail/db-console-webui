@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use Livewire\Livewire;
 use Illuminate\Support\Facades\Gate;
+use Livewire\Livewire;
 use Simtabi\Laranail\DBConsole\Access\Contracts\RbacDriver;
+use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\AccountManager;
 use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\Dashboard;
 use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\RoleManager;
-use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\AccountManager;
 use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\ServerSwitcher;
 use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\WebhookManager;
 

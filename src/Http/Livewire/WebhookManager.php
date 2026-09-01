@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\DBConsoleWebUI\Http\Livewire;
 
-use Livewire\Component;
 use Illuminate\Contracts\View\View;
+use Livewire\Component;
 use Simtabi\Laranail\DBConsole\Enums\WebhookEvent;
-use Simtabi\Laranail\DBConsole\Validation\RuleProvider;
-use Simtabi\Laranail\DBConsole\Models\WebhookSubscription;
 use Simtabi\Laranail\DBConsole\Exceptions\DBConsoleException;
+use Simtabi\Laranail\DBConsole\Models\WebhookSubscription;
 use Simtabi\Laranail\DBConsole\Validation\Requests\WebhookRequest;
+use Simtabi\Laranail\DBConsole\Validation\RuleProvider;
 use Simtabi\Laranail\DBConsole\Webhooks\WebhookManager as WebhookService;
 
 /**
@@ -56,7 +56,7 @@ final class WebhookManager extends Component
     {
         return \Illuminate\Support\Facades\View::make('laranail-db-console-webui::livewire.webhook-manager', [
             'subscriptions' => WebhookSubscription::query()->get(),
-            'eventTypes'    => array_map(static fn (WebhookEvent $e): string => $e->value, WebhookEvent::cases()),
+            'eventTypes' => array_map(static fn (WebhookEvent $e): string => $e->value, WebhookEvent::cases()),
         ]);
     }
 
@@ -66,7 +66,7 @@ final class WebhookManager extends Component
     protected function rules(): array
     {
         return [
-            'url'    => RuleProvider::field(WebhookRequest::class, 'url'),
+            'url' => RuleProvider::field(WebhookRequest::class, 'url'),
             'events' => RuleProvider::field(WebhookRequest::class, 'events'),
         ];
     }

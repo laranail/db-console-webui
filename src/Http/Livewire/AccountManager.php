@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\DBConsoleWebUI\Http\Livewire;
 
-use Livewire\Component;
-use Livewire\Attributes\Session;
 use Illuminate\Contracts\View\View;
+use Livewire\Attributes\Session;
+use Livewire\Component;
 use Simtabi\Laranail\DBConsole\Domain\Host;
 use Simtabi\Laranail\DBConsole\Domain\Username;
-use Simtabi\Laranail\DBConsole\Servers\ServerRegistry;
-use Simtabi\Laranail\DBConsole\Validation\RuleProvider;
 use Simtabi\Laranail\DBConsole\Exceptions\DBConsoleException;
-use Simtabi\Laranail\DBConsole\Validation\Requests\CreateAccountRequest;
+use Simtabi\Laranail\DBConsole\Servers\ServerRegistry;
 use Simtabi\Laranail\DBConsole\Services\AccountManager as AccountService;
+use Simtabi\Laranail\DBConsole\Validation\Requests\CreateAccountRequest;
+use Simtabi\Laranail\DBConsole\Validation\RuleProvider;
 
 /**
  * Create and drop database accounts on the active server. Validation comes
@@ -74,7 +74,7 @@ final class AccountManager extends Component
     {
         return [
             'username' => RuleProvider::field(CreateAccountRequest::class, 'username'),
-            'host'     => RuleProvider::field(CreateAccountRequest::class, 'host'),
+            'host' => RuleProvider::field(CreateAccountRequest::class, 'host'),
         ];
     }
 
