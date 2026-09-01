@@ -41,7 +41,7 @@ arch('the UI never builds SQL or runs raw queries')
  */
 function boundaryViolations(): array
 {
-    $srcDir = dirname(__DIR__, 2) . '/src';
+    $srcDir = dirname(__DIR__, 2).'/src';
     $violations = [];
 
     $iterator = new RecursiveIteratorIterator(
@@ -55,7 +55,7 @@ function boundaryViolations(): array
         }
 
         $path = (string) $file->getRealPath();
-        $relative = str_replace($srcDir . DIRECTORY_SEPARATOR, '', $path);
+        $relative = str_replace($srcDir.DIRECTORY_SEPARATOR, '', $path);
         $contents = (string) file_get_contents($path);
         $reasons = [];
 
@@ -89,9 +89,9 @@ test('no Livewire component crosses the boundary (raw SQL, own rules, or minted 
 });
 
 test('the boundary scan actually detects a violation (guards against a tautology)', function (): void {
-    $srcDir = dirname(__DIR__, 2) . '/src';
-    $probeDir = $srcDir . '/Http/Livewire';
-    $probe = $probeDir . '/__BoundaryProbe.php';
+    $srcDir = dirname(__DIR__, 2).'/src';
+    $probeDir = $srcDir.'/Http/Livewire';
+    $probe = $probeDir.'/__BoundaryProbe.php';
 
     file_put_contents($probe, "<?php\n// SELECT * FROM users\n\$sql = 'SELECT 1 FROM t';\n");
 

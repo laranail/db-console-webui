@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\DBConsoleWebUI\Providers;
 
-use Override;
-use Livewire\Livewire;
 use Composer\InstalledVersions;
-use Simtabi\Laranail\Package\Tools\Package;
+use Livewire\Livewire;
+use Override;
 use Simtabi\Laranail\DBConsoleWebUI\Doctor\Checks;
-use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\Dashboard;
-use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\RoleManager;
 use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\AccountManager;
+use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\Dashboard;
 use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\DatabaseWizard;
+use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\RoleManager;
 use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\ServerSwitcher;
 use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\WebhookManager;
+use Simtabi\Laranail\Package\Tools\Package;
 use Simtabi\Laranail\Package\Tools\Providers\PackageServiceProvider;
 use Simtabi\Laranail\Package\Tools\Support\Definitions\AboutSectionDefinition;
 use Simtabi\Laranail\Package\Tools\Support\Definitions\InstallCommandDefinition;

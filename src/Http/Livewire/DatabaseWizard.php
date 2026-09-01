@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\DBConsoleWebUI\Http\Livewire;
 
-use Livewire\Component;
+use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Session;
 use Livewire\Attributes\Validate;
-use Illuminate\Contracts\View\View;
-use Simtabi\Laranail\DBConsole\Domain\DbName;
+use Livewire\Component;
 use Simtabi\Laranail\DBConsole\Domain\Charset;
-use Simtabi\Laranail\DBConsole\Servers\ServerRegistry;
-use Simtabi\Laranail\DBConsole\Validation\RuleProvider;
-use Simtabi\Laranail\DBConsole\Services\DatabaseManager;
+use Simtabi\Laranail\DBConsole\Domain\DbName;
 use Simtabi\Laranail\DBConsole\Exceptions\DBConsoleException;
-use Simtabi\Laranail\DBConsole\Validation\Requests\DropDatabaseRequest;
+use Simtabi\Laranail\DBConsole\Servers\ServerRegistry;
+use Simtabi\Laranail\DBConsole\Services\DatabaseManager;
 use Simtabi\Laranail\DBConsole\Validation\Requests\CreateDatabaseRequest;
+use Simtabi\Laranail\DBConsole\Validation\Requests\DropDatabaseRequest;
+use Simtabi\Laranail\DBConsole\Validation\RuleProvider;
 
 /**
  * Create and drop databases on the active server. Validation is the CORE's:
@@ -92,7 +92,7 @@ final class DatabaseWizard extends Component
     protected function rules(): array
     {
         return [
-            'name'        => RuleProvider::field(CreateDatabaseRequest::class, 'name'),
+            'name' => RuleProvider::field(CreateDatabaseRequest::class, 'name'),
             'confirmName' => RuleProvider::field(DropDatabaseRequest::class, 'name'),
         ];
     }

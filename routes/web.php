@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\Dashboard;
-use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\RoleManager;
 use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\AccountManager;
+use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\Dashboard;
 use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\DatabaseWizard;
+use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\RoleManager;
 use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\WebhookManager;
 use Simtabi\Laranail\DBConsoleWebUI\Http\Middleware\EnsureCanManage;
 
