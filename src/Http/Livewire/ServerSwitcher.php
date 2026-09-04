@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\DBConsoleWebUI\Http\Livewire;
 
-use Illuminate\Contracts\View\View;
-use Livewire\Attributes\Session;
 use Livewire\Component;
+use Livewire\Attributes\Session;
+use Illuminate\Contracts\View\View;
 use Simtabi\Laranail\DBConsole\Servers\ServerRegistry;
 
 /**
@@ -39,7 +39,7 @@ final class ServerSwitcher extends Component
         foreach ($registry->names() as $name) {
             $definition = $registry->definition($name);
             $servers[] = [
-                'name' => $name,
+                'name'   => $name,
                 'engine' => $definition->engine->value,
             ];
         }

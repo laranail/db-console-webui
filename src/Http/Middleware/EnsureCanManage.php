@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\DBConsoleWebUI\Http\Middleware;
 
 use Closure;
-use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Contracts\Config\Repository as Config;
 
 /**
  * The single gate for the web UI: the caller must be authenticated, hold at
