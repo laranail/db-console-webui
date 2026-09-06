@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\DBConsoleWebUI\Tests;
 
 use Flux\FluxServiceProvider;
-use Illuminate\Foundation\Application;
 use Livewire\LivewireServiceProvider;
+use Illuminate\Foundation\Application;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Simtabi\Laranail\Console\Providers\ConsoleServiceProvider;
 use Simtabi\Laranail\DBConsole\Providers\DBConsoleServiceProvider;
-use Simtabi\Laranail\DBConsoleWebUI\Providers\DBConsoleWebUIServiceProvider;
 use Simtabi\Laranail\Enumerator\Providers\EnumeratorServiceProvider;
 use Simtabi\Laranail\Package\Tools\Providers\PackageToolsServiceProvider;
+use Simtabi\Laranail\DBConsoleWebUI\Providers\DBConsoleWebUIServiceProvider;
 
 abstract class TestCase extends Orchestra
 {
@@ -43,17 +43,17 @@ abstract class TestCase extends Orchestra
         /** @var Application $app */
         $config = $app['config'];
 
-        $config->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
+        $config->set('app.key', 'base64:' . base64_encode(random_bytes(32)));
         $config->set('database.default', 'testing');
         $config->set('database.connections.testing', [
-            'driver' => 'sqlite',
+            'driver'   => 'sqlite',
             'database' => ':memory:',
-            'prefix' => '',
+            'prefix'   => '',
         ]);
         $config->set('database.connections.db_console_catalog', [
-            'driver' => 'sqlite',
+            'driver'   => 'sqlite',
             'database' => ':memory:',
-            'prefix' => '',
+            'prefix'   => '',
         ]);
         $config->set('laranail.db-console.catalog.connection', 'db_console_catalog');
         $config->set('laranail.db-console-webui.enabled', true);
@@ -61,6 +61,6 @@ abstract class TestCase extends Orchestra
 
     protected function migrateCatalog(): void
     {
-        $this->loadMigrationsFrom(dirname(__DIR__).'/vendor/laranail/db-console/database/migrations');
+        $this->loadMigrationsFrom(dirname(__DIR__) . '/vendor/laranail/db-console/database/migrations');
     }
 }

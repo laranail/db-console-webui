@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\DBConsoleWebUI\Http\Livewire;
 
-use Illuminate\Contracts\View\View;
-use Livewire\Attributes\Session;
 use Livewire\Component;
-use Simtabi\Laranail\DBConsole\Exceptions\DBConsoleException;
+use Livewire\Attributes\Session;
+use Illuminate\Contracts\View\View;
 use Simtabi\Laranail\DBConsole\Servers\ServerRegistry;
 use Simtabi\Laranail\DBConsole\Services\DatabaseManager;
+use Simtabi\Laranail\DBConsole\Exceptions\DBConsoleException;
 
 /**
  * The landing page: for the active server it shows the live database count and
@@ -36,9 +36,9 @@ final class Dashboard extends Component
         }
 
         return \Illuminate\Support\Facades\View::make('laranail-db-console-webui::livewire.dashboard', [
-            'server' => $server,
+            'server'    => $server,
             'databases' => $databases,
-            'error' => $error,
+            'error'     => $error,
         ]);
     }
 
