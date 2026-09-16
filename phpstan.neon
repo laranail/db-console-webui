@@ -5,3 +5,15 @@ parameters:
     paths:
         - src
     treatPhpDocTypesAsCertain: false
+
+    ignoreErrors:
+        # larastan validates a view-string literal against a skeleton app that never
+        # boots this package's provider, so a namespace registered at RUNTIME is
+        # invisible to it and every `view()` / `View::make()` call reads as an error.
+        # The views exist; the suite renders them.
+        - '#expects view-string, string given#'
+
+    # Required BECAUSE of the ignore above: only larastan 3.x emits that error, so
+    # where an older one is installed the pattern would itself become an
+    # unmatched-ignore ERROR -- moving the failure rather than fixing it.
+    reportUnmatchedIgnoredErrors: false
