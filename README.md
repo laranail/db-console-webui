@@ -1,9 +1,10 @@
 # laranail/db-console-webui
 
-[![Packagist Version](https://img.shields.io/packagist/v/laranail/db-console-webui.svg?style=flat-square)](https://packagist.org/packages/laranail/db-console-webui)
 [![Tests](https://img.shields.io/github/actions/workflow/status/laranail/db-console-webui/tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/laranail/db-console-webui/actions/workflows/tests.yml)
 [![Static analysis](https://img.shields.io/github/actions/workflow/status/laranail/db-console-webui/static-analysis.yml?branch=main&label=static%20analysis&style=flat-square)](https://github.com/laranail/db-console-webui/actions/workflows/static-analysis.yml)
 [![License MIT](https://img.shields.io/packagist/l/laranail/db-console-webui.svg?style=flat-square)](LICENSE)
+
+`laranail/db-console-webui` is not published to Packagist, so there is no registry-version badge to show — see [Install](#install).
 
 > A thin Livewire + Flux web UI for [`laranail/db-console`](https://github.com/laranail/db-console) — all UI, zero business logic. Every screen calls the audited core services and reuses the core validation layer.
 
