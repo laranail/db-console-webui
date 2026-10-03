@@ -23,6 +23,18 @@ The installer publishes the config, views, and language files. Build the CSS/JS 
 
 The UI mounts at `/db-console` (configurable) and is guarded by the `EnsureCanManage` middleware: the caller must be signed in, hold a DBConsole permission, and — when configured — come from an allow-listed IP. Every action is still authorized inside the core services.
 
+## Quick start
+
+```blade
+{{-- resources/views/layouts/partials/admin-nav.blade.php --}}
+@can('db-console.database.view')
+    <a href="{{ route('db-console-webui.dashboard') }}">Databases</a>
+    <a href="{{ route('db-console-webui.accounts') }}">Database accounts</a>
+@endcan
+```
+
+The full walkthrough is in [Getting started](docs/getting-started.md); everything else is in the [documentation index](#documentation).
+
 ## <a name="documentation"></a>Documentation
 
 Full documentation is hosted at **<https://opensource.simtabi.com/documentation/laranail/db-console-webui/>**.
