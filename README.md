@@ -23,7 +23,26 @@ The installer publishes the config, views, and language files. Build the CSS/JS 
 
 The UI mounts at `/db-console` (configurable) and is guarded by the `EnsureCanManage` middleware: the caller must be signed in, hold a DBConsole permission, and — when configured — come from an allow-listed IP. Every action is still authorized inside the core services.
 
-## Quick start
+## Quick start guide and usage
+
+### Getting started
+
+1. Install and configure the core, `laranail/db-console`, first: register your servers and run its install.
+2. Build the entrypoints into your app's Vite pipeline:
+
+   ```js
+   // vite.config.js
+   laravel({ input: ["resources/css/db-console.css", "resources/js/db-console.js", ...] })
+   ```
+
+3. Optionally move the mount point or turn on Flux Pro components in `.env`:
+
+   ```dotenv
+   DB_CONSOLE_WEBUI_PATH=db-console
+   DB_CONSOLE_WEBUI_FLUX_PRO=false
+   ```
+
+### Usage
 
 ```blade
 {{-- resources/views/layouts/partials/admin-nav.blade.php --}}
