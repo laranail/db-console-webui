@@ -6,7 +6,9 @@ namespace Simtabi\Laranail\DBConsoleWebUI\Providers;
 
 use Override;
 use Livewire\Livewire;
+use Illuminate\Routing\Router;
 use Composer\InstalledVersions;
+use Illuminate\Routing\UrlGenerator;
 use Simtabi\Laranail\Package\Tools\Package;
 use Simtabi\Laranail\DBConsoleWebUI\Doctor\Checks;
 use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\Dashboard;
@@ -15,7 +17,9 @@ use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\AccountManager;
 use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\DatabaseWizard;
 use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\ServerSwitcher;
 use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\WebhookManager;
+use Simtabi\Laranail\DBConsoleWebUI\Routing\BareRouteNameResolver;
 use Simtabi\Laranail\Package\Tools\Providers\PackageServiceProvider;
+use Simtabi\Laranail\DBConsoleWebUI\Console\Commands\LegacyInstallCommand;
 use Simtabi\Laranail\Package\Tools\Support\Definitions\AboutSectionDefinition;
 use Simtabi\Laranail\Package\Tools\Support\Definitions\InstallCommandDefinition;
 
@@ -43,9 +47,12 @@ final class DBConsoleWebUIServiceProvider extends PackageServiceProvider
             ->hasDoctorChecks(Checks::all())
             ->hasInstallCommand(
                 InstallCommandDefinition::make()
-                    ->named('db-console-webui:install')
+                    ->named(LegacyInstallCommand::SCOPED_NAME)
                     ->publishes('config', 'views', 'translations'),
-            );
+            )
+            // Deprecated bare `db-console-webui:install`: a hidden forwarder
+            // that warns and runs the scoped command above.
+            ->hasConsoleCommands(LegacyInstallCommand::class);
     }
 
     #[Override]
@@ -57,5 +64,13 @@ final class DBConsoleWebUIServiceProvider extends PackageServiceProvider
         Livewire::component('db-console-webui.account-manager', AccountManager::class);
         Livewire::component('db-console-webui.role-manager', RoleManager::class);
         Livewire::component('db-console-webui.webhook-manager', WebhookManager::class);
+
+        // Route names are `laranail-db-console-webui.<page>`; keep the
+        // deprecated bare `db-console-webui.<page>` names resolving for route().
+        BareRouteNameResolver::install(
+            $this->app->make(Router::class),
+            $this->app->make(UrlGenerator::class),
+            $this->app,
+        );
     }
 }

@@ -1,6 +1,6 @@
 # Configuration
 
-Every `laranail.db-console-webui.*` key. Publish with `php artisan db-console-webui:install`.
+Every `laranail.db-console-webui.*` key. Publish with `php artisan laranail::db-console-webui.install` (the bare `db-console-webui:install` is a deprecated alias).
 
 | Key | Default | Purpose |
 |---|---|---|
