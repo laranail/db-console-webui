@@ -16,8 +16,10 @@ The design is deliberate — the UI can never grow its own business logic or val
 
 ```bash
 composer require laranail/db-console-webui
-php artisan db-console-webui:install
+php artisan laranail::db-console-webui.install
 ```
+
+The bare `db-console-webui:install` still works as a deprecated alias: it prints a deprecation line and runs `laranail::db-console-webui.install`.
 
 The installer publishes the config, views, and language files. Build the CSS/JS entrypoints (`resources/css/db-console.css`, `resources/js/db-console.js`) into your app's Vite pipeline, or publish and adapt them.
 
@@ -47,10 +49,12 @@ The UI mounts at `/db-console` (configurable) and is guarded by the `EnsureCanMa
 ```blade
 {{-- resources/views/layouts/partials/admin-nav.blade.php --}}
 @can('db-console.database.view')
-    <a href="{{ route('db-console-webui.dashboard') }}">Databases</a>
-    <a href="{{ route('db-console-webui.accounts') }}">Database accounts</a>
+    <a href="{{ route('laranail-db-console-webui.dashboard') }}">Databases</a>
+    <a href="{{ route('laranail-db-console-webui.accounts') }}">Database accounts</a>
 @endcan
 ```
+
+Route names are `laranail-db-console-webui.<page>` (`dashboard`, `databases`, `accounts`, `roles`, `webhooks`). The bare `db-console-webui.<page>` names are deprecated aliases that `route()` still resolves; `Route::has()` and `routeIs()` see only the scoped names.
 
 The full walkthrough is in [Getting started](docs/getting-started.md); everything else is in the [documentation index](#documentation).
 
