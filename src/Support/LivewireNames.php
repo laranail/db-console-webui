@@ -17,8 +17,11 @@ use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\WebhookManager;
  * `laranail-db-console-webui.<component>`.
  *
  * The pre-0.1 names (`db-console-webui.<component>`) are still registered, after
- * the scoped ones so that Livewire resolves a class back to its scoped name, and
- * mounting a component under one announces the replacement once per process.
+ * the scoped ones so that Livewire resolves a class back to its scoped name. On
+ * Livewire 4, mounting a component under one announces the replacement once per
+ * process. Livewire 3 replaces the requested name with the class's first alias
+ * before any hook runs, so there the old names keep working silently; see
+ * {@see self::canAnnounceLegacyMounts()}.
  */
 final class LivewireNames
 {
@@ -62,6 +65,35 @@ final class LivewireNames
         }
 
         return $map;
+    }
+
+    /**
+     * Whether the installed Livewire tells a mount hook which name the component
+     * was requested under. Livewire 4 keeps it (`Component::getName()` is the
+     * requested name); Livewire 3's registry normalises it to the class's first
+     * alias, so a mount under a deprecated name is indistinguishable there.
+     */
+    public static function canAnnounceLegacyMounts(): bool
+    {
+        return class_exists(\Livewire\Finder\Finder::class);
+    }
+
+    /**
+     * The name the installed Livewire resolves a component class back to.
+     *
+     * @param class-string<\Livewire\Component> $class
+     */
+    public static function resolvedNameOf(string $class): ?string
+    {
+        // Livewire 4's finder, else Livewire 3's registry. Both are named by string:
+        // only one of them exists in any given install.
+        $resolver = app()->bound('livewire.finder')
+            ? [app('livewire.finder'), 'normalizeName']
+            : [app('Livewire\\Mechanisms\\ComponentRegistry'), 'getName'];
+
+        $name = is_callable($resolver) ? $resolver($class) : null;
+
+        return is_string($name) ? $name : null;
     }
 
     /**

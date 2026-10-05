@@ -85,7 +85,7 @@ it('resolves each component class back to its scoped Livewire name', function ()
     // Livewire maps a class to the FIRST name it was registered under; full-page
     // routes and snapshots use that name, so it must be the scoped one.
     foreach (LivewireNames::COMPONENTS as $component => $class) {
-        expect(app('livewire.finder')->normalizeName($class))->toBe(LivewireNames::name($component));
+        expect(LivewireNames::resolvedNameOf($class))->toBe(LivewireNames::name($component));
     }
 });
 
@@ -191,11 +191,21 @@ it('mounts a component under its deprecated bare name, announcing the replacemen
         restore_error_handler();
     }
 
+    // The bare name builds the same component on every supported Livewire.
+    expect(Livewire::new('db-console-webui.dashboard'))->toBeInstanceOf(Dashboard::class);
+
+    if (! LivewireNames::canAnnounceLegacyMounts()) {
+        // Livewire 3 normalises the requested name to the class's first alias before
+        // any hook runs, so the old name renders but cannot be told apart. Documented.
+        expect($notices)->toBe([]);
+
+        return;
+    }
+
     expect($notices)->toHaveCount(1)
         ->and($notices[0])->toContain('[db-console-webui.dashboard] is deprecated')
         ->and($notices[0])->toContain('[' . LivewireNames::name('dashboard') . ']');
 
-    expect(Livewire::new('db-console-webui.dashboard'))->toBeInstanceOf(Dashboard::class);
 });
 
 it('dispatches the scoped server-changed browser event, and the deprecated bare one beside it', function (): void {

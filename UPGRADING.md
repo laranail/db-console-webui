@@ -13,7 +13,7 @@ The five routes are now named `laranail-db-console-webui.<page>` (`dashboard`, `
 
 ### Livewire components are vendor-scoped
 
-The six components are now registered as `laranail-db-console-webui.<name>` (`server-switcher`, `dashboard`, `database-wizard`, `account-manager`, `role-manager`, `webhook-manager`). The bare `db-console-webui.<name>` names are still registered, so `@livewire('db-console-webui.dashboard')` keeps rendering, but each raises one `E_USER_DEPRECATED` per process. Move embeds to the scoped names.
+The six components are now registered as `laranail-db-console-webui.<name>` (`server-switcher`, `dashboard`, `database-wizard`, `account-manager`, `role-manager`, `webhook-manager`). The bare `db-console-webui.<name>` names are still registered, so `@livewire('db-console-webui.dashboard')` keeps rendering. On Livewire 4 each raises one `E_USER_DEPRECATED` per process; on Livewire 3 they render without a notice, because Livewire 3 does not expose the requested name. Move embeds to the scoped names.
 
 ### The server-changed browser event is `laranail-db-console-webui:server-changed`
 

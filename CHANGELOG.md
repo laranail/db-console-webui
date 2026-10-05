@@ -30,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The bare route names `db-console-webui.<page>`. `route()` still resolves them to the scoped routes and logs a one-time warning; `Route::has()` and `routeIs()` see only the scoped names. Earliest removal: the next minor after 0.1.
 - The bare `db-console-webui:install` command, kept as a hidden forwarder that prints a deprecation line and runs `laranail::db-console-webui.install`. Earliest removal: the next minor after 0.1.
 - `Routing\BareRouteNameResolver`. It still works when installed by hand, delegating to package-tools' `BareRouteNameAliases`. Earliest removal: the next minor after 0.1.
-- The bare Livewire component names `db-console-webui.<name>`. They are still registered for the same classes; mounting one raises one `E_USER_DEPRECATED` per name per process naming the replacement. Earliest removal: the next minor after 0.1.
+- The bare Livewire component names `db-console-webui.<name>`. They are still registered for the same classes; on Livewire 4, mounting one raises one `E_USER_DEPRECATED` per name per process naming the replacement. Livewire 3 normalises the requested name before any hook runs, so there they work without a notice. Earliest removal: the next minor after 0.1.
 - The bare `db-console:server-changed` browser event. It is still dispatched beside `laranail-db-console-webui:server-changed`. Earliest removal: the next minor after 0.1.
 
 ### Fixed

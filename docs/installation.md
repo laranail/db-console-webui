@@ -45,7 +45,7 @@ The deprecated aliases keep working until the next minor after 0.1 at the earlie
 
 - `php artisan db-console-webui:install` prints a deprecation line and runs `laranail::db-console-webui.install`.
 - `route('db-console-webui.dashboard')` generates the same URL as `route('laranail-db-console-webui.dashboard')` and logs a one-time warning per name. It works through package-tools' `BareRouteNameAliases`, which hooks `URL::resolveMissingNamedRoutesUsing()`. Laravel consults that hook only for a name it does not hold, so an application route of the same name always wins, and any resolver another package installed earlier is still consulted for names this one does not own.
-- `@livewire('db-console-webui.dashboard')` renders the same component and raises one `E_USER_DEPRECATED` per name.
+- `@livewire('db-console-webui.dashboard')` renders the same component and, on Livewire 4, raises one `E_USER_DEPRECATED` per name (Livewire 3 does not expose the requested name, so there it renders silently).
 - `db-console:server-changed` is still dispatched beside `laranail-db-console-webui:server-changed`.
 - `Route::has()` and `request()->routeIs()` read the route collection directly and never reach that fallback. Ask them for the scoped names.
 

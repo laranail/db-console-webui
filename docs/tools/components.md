@@ -20,7 +20,7 @@ Each component is thin: it resolves the active server, calls the service, and re
 
 ## Deprecated component names
 
-The bare `db-console-webui.<name>` names are still registered as deprecated aliases of the same classes, so an existing `@livewire('db-console-webui.dashboard')` keeps rendering. Mounting a component under a bare name raises one `E_USER_DEPRECATED` per name per process, naming the replacement; Laravel writes it to the `deprecations` log channel when one is configured. The aliases are removed no earlier than the next minor after 0.1.
+The bare `db-console-webui.<name>` names are still registered as deprecated aliases of the same classes, so an existing `@livewire('db-console-webui.dashboard')` keeps rendering. On Livewire 4, mounting a component under a bare name raises one `E_USER_DEPRECATED` per name per process, naming the replacement; Laravel writes it to the `deprecations` log channel when one is configured. On Livewire 3 the bare names render the same component without a notice: Livewire 3 replaces the requested name with the class's first registered name before any hook runs, so the package cannot tell which name was used. The aliases are removed no earlier than the next minor after 0.1.
 
 The scoped names are registered first, so Livewire maps each class back to its scoped name: the full-page routes and component snapshots never use the bare one.
 
