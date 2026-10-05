@@ -56,7 +56,16 @@ final class BareRouteNameResolver
             return $this->url->route($scoped, $parameters ?? [], $absolute ?? true);
         }
 
-        return is_callable($this->previous) ? ($this->previous)($name, $parameters, $absolute) : null;
+        if (! is_callable($this->previous)) {
+            return null;
+        }
+
+        // A foreign resolver is not ours to trust: anything but a string (an
+        // object, an int, an array) would be a TypeError against ?string under
+        // strict_types, so it reads as "not resolved" instead.
+        $resolved = ($this->previous)($name, $parameters, $absolute);
+
+        return is_string($resolved) ? $resolved : null;
     }
 
     /**
