@@ -167,6 +167,23 @@ it('defers names it does not own to the resolver that was installed before it', 
         ->and(route('db-console-webui.dashboard'))->toBe(route(RouteNames::name('dashboard')));
 });
 
+it('treats a non-string answer from the previous resolver as no answer', function (mixed $answer): void {
+    $url = app(UrlGenerator::class);
+    $url->resolveMissingNamedRoutesUsing(fn (string $name): mixed => $name === 'someone-else.odd' ? $answer : null);
+
+    $resolver = BareRouteNameResolver::install(app('router'), $url, app());
+
+    // Under strict_types an unchecked pass-through is a TypeError against the
+    // ?string return type; a foreign non-string must read as "not resolved".
+    expect($resolver('someone-else.odd'))->toBeNull()
+        ->and(fn (): string => route('someone-else.odd'))
+        ->toThrow(Symfony\Component\Routing\Exception\RouteNotFoundException::class);
+})->with([
+    'int'           => [42],
+    'url generator' => [fn (): UrlGenerator => app(UrlGenerator::class)],
+    'array'         => [['https://example.test']],
+]);
+
 it('runs the deprecated bare install command through the scoped one, with a warning', function (): void {
     $this->artisan('db-console-webui:install')
         ->expectsOutputToContain('is deprecated and will be removed no earlier than the next minor after 0.1; use [laranail::db-console-webui.install]')

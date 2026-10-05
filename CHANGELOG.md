@@ -22,6 +22,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The bare route names `db-console-webui.<page>`. `route()` still resolves them to the scoped routes and logs a one-time warning; `Route::has()` and `routeIs()` see only the scoped names. Earliest removal: the next minor after 0.1.
 - The bare `db-console-webui:install` command, kept as a hidden forwarder that prints a deprecation line and runs `laranail::db-console-webui.install`. Earliest removal: the next minor after 0.1.
 
+### Fixed
+
+- `BareRouteNameResolver` passed the previously installed resolver's answer through unchecked, so a foreign resolver returning anything but a string (an object, an int, an array) raised a `TypeError` inside `route()` under `strict_types`. A non-string answer now reads as "not resolved", and `route()` reports the missing route as before.
+
 ## [0.1.0] - 2026-07-11
 
 Initial public release.
