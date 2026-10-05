@@ -2,152 +2,128 @@
 
 declare(strict_types=1);
 
-use Illuminate\Routing\Route;
-use Illuminate\Cache\RateLimiter;
+use Livewire\Livewire;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Routing\UrlGenerator;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route as RouteFacade;
 use Simtabi\Laranail\DBConsoleWebUI\Support\RouteNames;
+use Simtabi\Laranail\Package\Tools\Testing\NamingScope;
+use Simtabi\Laranail\DBConsoleWebUI\Support\Translations;
+use Simtabi\Laranail\DBConsoleWebUI\Support\BrowserEvents;
+use Simtabi\Laranail\DBConsoleWebUI\Support\LivewireNames;
+use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\Dashboard;
+use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\ServerSwitcher;
 use Simtabi\Laranail\DBConsoleWebUI\Routing\BareRouteNameResolver;
-use Simtabi\Laranail\DBConsoleWebUI\Http\Middleware\EnsureCanManage;
+use Simtabi\Laranail\Package\Tools\Testing\AssertsRegisteredNames;
 use Simtabi\Laranail\DBConsoleWebUI\Console\Commands\LegacyInstallCommand;
 
 /*
  * Every public name this package registers into a host-owned, flat registry
- * (route names, rate limiters, Artisan commands, middleware aliases) carries
- * the vendor and the package slug. The assertions read the LIVE registries of
- * the booted application -- not the provider source -- so they hold however
- * the registration code is written.
- *
- * A name is "owned" by this package when it mentions the slug, or when the
- * thing it points at is a class in this package's namespace. Bias is toward
- * "owned": a false positive costs a look, a false negative ships a bare name.
+ * (route names, rate limiters, Artisan commands, middleware aliases, Livewire
+ * components, view and translation namespaces) carries the vendor and the
+ * package slug. package-tools' AssertsRegisteredNames reads the LIVE registries
+ * of the booted application -- not the provider source -- so the guard holds
+ * however the registration code is written.
  */
 
-const NAMING_SLUG = 'db-console-webui';
-const NAMING_NAMESPACE = 'Simtabi\\Laranail\\DBConsoleWebUI\\';
+uses(AssertsRegisteredNames::class);
 
-/**
- * Deprecated bare names kept working on purpose. Each entry is a ceiling, not
- * a licence: the test fails if an entry stops being registered, so a stale row
- * cannot quietly cover a new bare name.
- *
- * @var array<string, string> name => reason
- */
-const NAMING_DEPRECATED_COMMANDS = [
-    'db-console-webui:install' => 'deprecated forwarder to laranail::db-console-webui.install; earliest removal: next minor after 0.1',
-];
-
-/** @return list<Route> */
-function namingOwnedRoutes(): array
+function dbConsoleWebUiScope(): NamingScope
 {
-    $owned = [];
-
-    foreach (app('router')->getRoutes()->getRoutes() as $route) {
-        $controller = $route->getAction('controller');
-        $controller = is_string($controller) ? ltrim($controller, '\\') : '';
-        $name = (string) $route->getName();
-
-        // Owned when the name mentions the slug, the action is one of this
-        // package's classes, or the route sits behind this package's gate.
-        $gated = in_array(EnsureCanManage::class, $route->gatherMiddleware(), true);
-
-        if ($gated || str_starts_with($controller, NAMING_NAMESPACE) || str_contains($name, NAMING_SLUG)) {
-            $owned[] = $route;
-        }
-    }
-
-    return $owned;
+    // basePath is src/: package-tools 0.1.3 defaults it to the package root, which
+    // would also claim closures defined under vendor/ and tests/ as this package's.
+    return NamingScope::for(
+        'laranail/db-console-webui',
+        'Simtabi\\Laranail\\DBConsoleWebUI\\',
+        basePath: dirname(__DIR__, 2) . '/src',
+    );
 }
 
 it('registers every route under the vendor-scoped laranail-db-console-webui. name', function (): void {
-    $routes = namingOwnedRoutes();
-
-    // Non-vacuity: the package ships five pages. A filter that matches nothing
-    // would pass every assertion below trivially.
-    expect(count($routes))->toBeGreaterThanOrEqual(5);
-
-    foreach ($routes as $route) {
-        expect($route->getName())
-            ->not->toBeNull("route [{$route->uri()}] has no name")
-            ->and((string) $route->getName())->toStartWith('laranail-' . NAMING_SLUG . '.');
-    }
+    // Non-vacuity: the package ships five pages.
+    expect($this->assertRouteNamesScoped(dbConsoleWebUiScope(), atLeast: 5))
+        ->toEqualCanonicalizing(array_values(RouteNames::legacyMap()));
 });
 
 it('registers no bare rate limiter', function (): void {
-    /** @var array<string, mixed> $limiters */
-    $limiters = (fn (): array => $this->limiters)->call(app(RateLimiter::class));
-
-    // Proves the registry was read; the package registers no limiter today.
-    expect($limiters)->toBeArray();
-
-    foreach (array_keys($limiters) as $name) {
-        if (str_contains($name, NAMING_SLUG)) {
-            expect($name)->toStartWith('laranail-' . NAMING_SLUG . '.');
-        }
-    }
+    // The package registers no limiter today; atLeast: 0 still fails on a bare
+    // one it owns, and the read itself fails loudly if the registry moved.
+    expect($this->assertRateLimitersScoped(dbConsoleWebUiScope(), atLeast: 0))->toBe([]);
 });
 
 it('registers every command under laranail::db-console-webui. except the listed deprecated forwarders', function (): void {
-    $owned = [];
+    $scoped = $this->assertCommandNamesScoped(
+        dbConsoleWebUiScope(),
+        deprecated: ['db-console-webui:install'],
+        atLeast: 1,
+    );
 
-    foreach (Artisan::all() as $name => $command) {
-        if (str_contains($name, NAMING_SLUG) || str_starts_with($command::class, NAMING_NAMESPACE)) {
-            $owned[$name] = $command;
-        }
-    }
+    expect($scoped)->toContain(LegacyInstallCommand::SCOPED_NAME);
 
-    // Non-vacuity: at least the install command must have been found.
-    expect($owned)->toHaveKey('laranail::' . NAMING_SLUG . '.install');
+    $legacy = Illuminate\Support\Facades\Artisan::all()['db-console-webui:install'];
 
-    foreach ($owned as $name => $command) {
-        if (array_key_exists($name, NAMING_DEPRECATED_COMMANDS)) {
-            expect($command)->toBeInstanceOf(LegacyInstallCommand::class)
-                ->and($command->isHidden())->toBeTrue("deprecated [{$name}] must stay out of `artisan list`");
-
-            continue;
-        }
-
-        expect($name)->toStartWith('laranail::' . NAMING_SLUG . '.');
-    }
-
-    // A stale exemption fails instead of covering something new.
-    foreach (array_keys(NAMING_DEPRECATED_COMMANDS) as $legacy) {
-        expect($owned)->toHaveKey($legacy);
-    }
+    expect($legacy)->toBeInstanceOf(LegacyInstallCommand::class)
+        ->and($legacy->isHidden())->toBeTrue('the deprecated forwarder must stay out of `artisan list`');
 });
 
 it('registers no bare middleware alias', function (): void {
-    // Non-vacuity: the framework's own aliases prove the registry was read.
-    expect(app('router')->getMiddleware())->toHaveKey('auth');
+    expect($this->assertMiddlewareAliasesScoped(dbConsoleWebUiScope(), atLeast: 0))->toBe([]);
+});
 
-    foreach (app('router')->getMiddleware() as $alias => $class) {
-        $ownedClass = is_string($class) && str_starts_with(ltrim($class, '\\'), NAMING_NAMESPACE);
+it('registers every Livewire component under laranail-db-console-webui., keeping the bare names as deprecated aliases', function (): void {
+    $scoped = $this->assertLivewireComponentsScoped(
+        dbConsoleWebUiScope(),
+        deprecated: array_keys(LivewireNames::legacyMap()),
+        atLeast: 6,
+    );
 
-        if ($ownedClass || str_contains($alias, NAMING_SLUG)) {
-            expect($alias)->toStartWith('laranail-' . NAMING_SLUG);
-        }
+    expect($scoped)->toEqualCanonicalizing(array_values(LivewireNames::legacyMap()));
+});
+
+it('resolves each component class back to its scoped Livewire name', function (): void {
+    // Livewire maps a class to the FIRST name it was registered under; full-page
+    // routes and snapshots use that name, so it must be the scoped one.
+    foreach (LivewireNames::COMPONENTS as $component => $class) {
+        expect(app('livewire.finder')->normalizeName($class))->toBe(LivewireNames::name($component));
     }
+});
+
+it('registers the views and translations under both namespace forms', function (): void {
+    $scope = dbConsoleWebUiScope();
+
+    expect($this->assertViewNamespacesScoped($scope, atLeast: 2))
+        ->toContain('laranail/db-console-webui', 'laranail-db-console-webui')
+        ->and($this->assertTranslationNamespacesScoped($scope, atLeast: 2))
+        ->toContain('laranail/db-console-webui', 'laranail-db-console-webui');
+
+    // The canonical view form resolves through exactly the hint paths of the hyphen
+    // form, the application's published override directory included.
+    $hints = view()->getFinder()->getHints();
+
+    expect($hints['laranail/db-console-webui'])->toBe($hints['laranail-db-console-webui']);
+
+    // The hyphen form a host may still write resolves the same file and line.
+    expect(view()->exists('laranail-db-console-webui::livewire.dashboard'))->toBeTrue()
+        ->and(view()->exists('laranail/db-console-webui::livewire.dashboard'))->toBeTrue()
+        ->and(__('laranail-db-console-webui::ui.dashboard'))->toBe(__('laranail/db-console-webui::ui.dashboard'))
+        ->and(__('laranail/db-console-webui::ui.dashboard'))->not->toBe('laranail/db-console-webui::ui.dashboard');
 });
 
 it('still resolves every deprecated bare route name to the scoped route, with a warning', function (): void {
     Log::spy();
 
-    foreach (RouteNames::PAGES as $page) {
-        $bare = RouteNames::LEGACY_PREFIX . $page;
-        $scoped = RouteNames::name($page);
+    $this->assertDeprecatedRouteNamesResolve(RouteNames::legacyMap());
 
-        // The registry holds only the scoped name...
+    foreach (RouteNames::legacyMap() as $bare => $scoped) {
+        // The registry holds only the scoped name, and the bare one generates the same URL.
         expect(RouteFacade::has($bare))->toBeFalse()
-            ->and(RouteFacade::has($scoped))->toBeTrue()
-            // ...and the bare one still generates the same URL.
             ->and(route($bare))->toBe(route($scoped));
     }
 
     Log::shouldHaveReceived('warning')->withArgs(
         fn (string $message): bool => str_contains($message, 'deprecated') && str_contains($message, RouteNames::name('dashboard')),
-    );
+    )->once();
 });
 
 it('keeps an unknown route name an error', function (): void {
@@ -159,6 +135,7 @@ it('defers names it does not own to the resolver that was installed before it', 
     $url = app(UrlGenerator::class);
     $url->resolveMissingNamedRoutesUsing(fn (string $name): ?string => $name === 'someone-else.login' ? 'https://example.test/login' : null);
 
+    // The deprecated hand-installed resolver still works, delegating to the shared one.
     BareRouteNameResolver::install(app('router'), $url, app());
 
     // Another package's fallback still answers...
@@ -188,4 +165,130 @@ it('runs the deprecated bare install command through the scoped one, with a warn
     $this->artisan('db-console-webui:install')
         ->expectsOutputToContain('is deprecated and will be removed no earlier than the next minor after 0.1; use [laranail::db-console-webui.install]')
         ->assertSuccessful();
+});
+
+it('mounts a component under its deprecated bare name, announcing the replacement once', function (): void {
+    config()->set('database.connections.ui_admin', ['driver' => 'sqlite', 'database' => ':memory:', 'prefix' => '']);
+    config()->set('laranail.db-console.servers.local', ['engine' => 'sqlite', 'connection' => 'ui_admin', 'tls' => ['enabled' => false]]);
+    config()->set('laranail.db-console.default_server', 'local');
+    $this->migrateCatalog();
+    Gate::before(fn ($user = null): bool => true);
+
+    $notices = [];
+    set_error_handler(function (int $level, string $message) use (&$notices): bool {
+        $notices[] = $message;
+
+        return true;
+    }, E_USER_DEPRECATED);
+
+    try {
+        Livewire::test(LivewireNames::name('dashboard'))->assertOk();
+        expect($notices)->toBe([]);
+
+        Livewire::test('db-console-webui.dashboard')->assertOk();
+        Livewire::test('db-console-webui.dashboard')->assertOk();
+    } finally {
+        restore_error_handler();
+    }
+
+    expect($notices)->toHaveCount(1)
+        ->and($notices[0])->toContain('[db-console-webui.dashboard] is deprecated')
+        ->and($notices[0])->toContain('[' . LivewireNames::name('dashboard') . ']');
+
+    expect(Livewire::new('db-console-webui.dashboard'))->toBeInstanceOf(Dashboard::class);
+});
+
+it('dispatches the scoped server-changed browser event, and the deprecated bare one beside it', function (): void {
+    config()->set('database.connections.ui_admin', ['driver' => 'sqlite', 'database' => ':memory:', 'prefix' => '']);
+    config()->set('laranail.db-console.servers.local', ['engine' => 'sqlite', 'connection' => 'ui_admin', 'tls' => ['enabled' => false]]);
+    config()->set('laranail.db-console.default_server', 'local');
+    $this->migrateCatalog();
+    Gate::before(fn ($user = null): bool => true);
+
+    Livewire::test(ServerSwitcher::class)
+        ->call('select', 'local')
+        ->assertDispatched(BrowserEvents::SERVER_CHANGED, server: 'local')
+        ->assertDispatched(BrowserEvents::LEGACY_SERVER_CHANGED, server: 'local');
+});
+
+/**
+ * Write a translation override file for `ui` into lang/vendor/<dir>/en, run $test, and remove it.
+ *
+ * @param array<string, array<string, string>> $overrides lang/vendor sub-directory => lines
+ */
+function withUiOverrides(array $overrides, Closure $test): void
+{
+    $written = [];
+
+    foreach ($overrides as $dir => $lines) {
+        $path = lang_path("vendor/{$dir}/en");
+        @mkdir($path, 0777, true);
+        file_put_contents($path . '/ui.php', '<?php return ' . var_export($lines, true) . ';');
+        $written[] = $path;
+    }
+
+    app('translator')->setLoaded([]);
+
+    try {
+        $test();
+    } finally {
+        foreach ($written as $path) {
+            @unlink($path . '/ui.php');
+            @rmdir($path);
+            @rmdir(dirname($path));
+            if (str_contains($path, 'vendor/laranail/')) {
+                @rmdir(dirname($path, 2));
+            }
+        }
+
+        app('translator')->setLoaded([]);
+    }
+}
+
+/**
+ * Render the package's own role-manager view straight from its file. A copy published into the
+ * Testbench skeleton by the install-command test would otherwise shadow it through the namespace.
+ */
+function renderRoleManager(): string
+{
+    return view()->file(dirname(__DIR__, 2) . '/resources/views/livewire/role-manager.blade.php', ['roles' => []])->render();
+}
+
+it('reads published translation overrides from the directory the publish tag writes to', function (): void {
+    // vendor:publish writes to lang/vendor/laranail/db-console-webui, which only the
+    // canonical slash namespace reads.
+    withUiOverrides(['laranail/db-console-webui' => ['roles' => 'Published roles']], function (): void {
+        expect(Translations::get('ui.roles'))->toBe('Published roles')
+            ->and(renderRoleManager())->toContain('Published roles');
+    });
+});
+
+it('still applies an override made against the hyphen namespace', function (): void {
+    // A host that overrode the namespace the package used before keeps its lines:
+    // a file in lang/vendor/laranail-db-console-webui...
+    withUiOverrides(['laranail-db-console-webui' => ['roles' => 'Hyphen roles']], function (): void {
+        expect(Translations::get('ui.roles'))->toBe('Hyphen roles')
+            ->and(renderRoleManager())->toContain('Hyphen roles');
+    });
+
+    // ...or lines added at runtime on that namespace.
+    app('translator')->addLines(['ui.webhooks' => 'Runtime webhooks'], 'en', Translations::LEGACY_NAMESPACE);
+
+    expect(Translations::get('ui.webhooks'))->toBe('Runtime webhooks');
+});
+
+it('prefers the canonical override when both namespaces are overridden', function (): void {
+    withUiOverrides([
+        'laranail/db-console-webui' => ['roles' => 'Canonical roles'],
+        'laranail-db-console-webui' => ['roles' => 'Hyphen roles'],
+    ], function (): void {
+        expect(Translations::get('ui.roles'))->toBe('Canonical roles')
+            ->and(renderRoleManager())->toContain('Canonical roles');
+    });
+});
+
+it('falls back to the packaged line, and to the canonical key for a missing one', function (): void {
+    expect(Translations::get('ui.roles'))->toBe(__('laranail/db-console-webui::ui.roles'))
+        ->and(Translations::get('ui.roles'))->not->toBe(Translations::key('ui.roles'))
+        ->and(Translations::get('ui.no_such_line'))->toBe(Translations::key('ui.no_such_line'));
 });

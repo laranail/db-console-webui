@@ -6,18 +6,13 @@ namespace Simtabi\Laranail\DBConsoleWebUI\Providers;
 
 use Override;
 use Livewire\Livewire;
-use Illuminate\Routing\Router;
+use Livewire\Component;
 use Composer\InstalledVersions;
-use Illuminate\Routing\UrlGenerator;
 use Simtabi\Laranail\Package\Tools\Package;
 use Simtabi\Laranail\DBConsoleWebUI\Doctor\Checks;
-use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\Dashboard;
-use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\RoleManager;
-use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\AccountManager;
-use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\DatabaseWizard;
-use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\ServerSwitcher;
-use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\WebhookManager;
-use Simtabi\Laranail\DBConsoleWebUI\Routing\BareRouteNameResolver;
+use Simtabi\Laranail\DBConsoleWebUI\Support\RouteNames;
+use Simtabi\Laranail\DBConsoleWebUI\Support\LivewireNames;
+use Simtabi\Laranail\Package\Tools\Enums\DeprecationNotice;
 use Simtabi\Laranail\Package\Tools\Providers\PackageServiceProvider;
 use Simtabi\Laranail\DBConsoleWebUI\Console\Commands\LegacyInstallCommand;
 use Simtabi\Laranail\Package\Tools\Support\Definitions\AboutSectionDefinition;
@@ -52,25 +47,31 @@ final class DBConsoleWebUIServiceProvider extends PackageServiceProvider
             )
             // Deprecated bare `db-console-webui:install`: a hidden forwarder
             // that warns and runs the scoped command above.
-            ->hasConsoleCommands(LegacyInstallCommand::class);
+            ->hasConsoleCommands(LegacyInstallCommand::class)
+            // Route names are `laranail-db-console-webui.<page>`; the deprecated
+            // bare `db-console-webui.<page>` names still resolve through route(),
+            // with one logged warning per name per process.
+            ->hasDeprecatedRouteNames(map: RouteNames::legacyMap(), notice: DeprecationNotice::Log);
     }
 
     #[Override]
     public function packageBooted(): void
     {
-        Livewire::component('db-console-webui.server-switcher', ServerSwitcher::class);
-        Livewire::component('db-console-webui.dashboard', Dashboard::class);
-        Livewire::component('db-console-webui.database-wizard', DatabaseWizard::class);
-        Livewire::component('db-console-webui.account-manager', AccountManager::class);
-        Livewire::component('db-console-webui.role-manager', RoleManager::class);
-        Livewire::component('db-console-webui.webhook-manager', WebhookManager::class);
+        // Scoped names first: Livewire maps a class back to the FIRST name it
+        // was registered under, so full-page routes and snapshots use these.
+        foreach (LivewireNames::COMPONENTS as $component => $class) {
+            Livewire::component(LivewireNames::name($component), $class);
+        }
 
-        // Route names are `laranail-db-console-webui.<page>`; keep the
-        // deprecated bare `db-console-webui.<page>` names resolving for route().
-        BareRouteNameResolver::install(
-            $this->app->make(Router::class),
-            $this->app->make(UrlGenerator::class),
-            $this->app,
-        );
+        // Deprecated bare names, kept so `@livewire('db-console-webui.<name>')`
+        // and `<livewire:db-console-webui.<name> />` still render. Mounting one
+        // raises a single E_USER_DEPRECATED naming the replacement.
+        foreach (LivewireNames::COMPONENTS as $component => $class) {
+            Livewire::component(LivewireNames::LEGACY_PREFIX . $component, $class);
+        }
+
+        Livewire::listen('mount', static function (Component $component): void {
+            LivewireNames::announceIfLegacy($component->getName());
+        });
     }
 }

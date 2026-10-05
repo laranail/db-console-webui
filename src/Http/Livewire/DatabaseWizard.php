@@ -13,6 +13,7 @@ use Simtabi\Laranail\DBConsole\Domain\Charset;
 use Simtabi\Laranail\DBConsole\Servers\ServerRegistry;
 use Simtabi\Laranail\DBConsole\Validation\RuleProvider;
 use Simtabi\Laranail\DBConsole\Services\DatabaseManager;
+use Simtabi\Laranail\DBConsoleWebUI\Support\Translations;
 use Simtabi\Laranail\DBConsole\Exceptions\DBConsoleException;
 use Simtabi\Laranail\DBConsole\Validation\Requests\DropDatabaseRequest;
 use Simtabi\Laranail\DBConsole\Validation\Requests\CreateDatabaseRequest;
@@ -50,7 +51,7 @@ final class DatabaseWizard extends Component
                 new DbName($this->name),
                 new Charset($this->charset),
             );
-            $this->flash = __('laranail-db-console-webui::ui.created');
+            $this->flash = Translations::get('ui.created');
             $this->reset('name');
         } catch (DBConsoleException $e) {
             $this->error = $e->userMessage();
@@ -64,7 +65,7 @@ final class DatabaseWizard extends Component
 
         try {
             app(DatabaseManager::class)->drop($this->server(), new DbName($this->confirmName));
-            $this->flash = __('laranail-db-console-webui::ui.dropped');
+            $this->flash = Translations::get('ui.dropped');
             $this->reset('confirmName');
         } catch (DBConsoleException $e) {
             $this->error = $e->userMessage();
@@ -80,7 +81,7 @@ final class DatabaseWizard extends Component
             $this->error ??= $e->userMessage();
         }
 
-        return \Illuminate\Support\Facades\View::make('laranail-db-console-webui::livewire.database-wizard', ['databases' => $databases]);
+        return \Illuminate\Support\Facades\View::make('laranail/db-console-webui::livewire.database-wizard', ['databases' => $databases]);
     }
 
     /**
