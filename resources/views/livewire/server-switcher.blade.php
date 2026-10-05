@@ -1,8 +1,8 @@
 <div>
-    <flux:heading size="sm">{{ __('laranail-db-console-webui::ui.active_server') }}</flux:heading>
+    <flux:heading size="sm">{{ \Simtabi\Laranail\DBConsoleWebUI\Support\Translations::get('ui.active_server') }}</flux:heading>
 
     @if (count($servers) === 0)
-        <flux:text variant="subtle">{{ __('laranail-db-console-webui::ui.no_servers') }}</flux:text>
+        <flux:text variant="subtle">{{ \Simtabi\Laranail\DBConsoleWebUI\Support\Translations::get('ui.no_servers') }}</flux:text>
     @else
         <flux:select wire:model.live="active" @change="$wire.select($event.target.value)">
             @foreach ($servers as $server)

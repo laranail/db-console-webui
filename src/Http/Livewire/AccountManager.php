@@ -11,6 +11,7 @@ use Simtabi\Laranail\DBConsole\Domain\Host;
 use Simtabi\Laranail\DBConsole\Domain\Username;
 use Simtabi\Laranail\DBConsole\Servers\ServerRegistry;
 use Simtabi\Laranail\DBConsole\Validation\RuleProvider;
+use Simtabi\Laranail\DBConsoleWebUI\Support\Translations;
 use Simtabi\Laranail\DBConsole\Exceptions\DBConsoleException;
 use Simtabi\Laranail\DBConsole\Validation\Requests\CreateAccountRequest;
 use Simtabi\Laranail\DBConsole\Services\AccountManager as AccountService;
@@ -48,7 +49,7 @@ final class AccountManager extends Component
                 null,   // generate a strong password
             );
             $this->generatedPassword = $result->takeGeneratedPassword();
-            $this->flash = __('laranail-db-console-webui::ui.created');
+            $this->flash = Translations::get('ui.created');
             $this->reset('username');
         } catch (DBConsoleException $e) {
             $this->error = $e->userMessage();
@@ -64,7 +65,7 @@ final class AccountManager extends Component
             $this->error ??= $e->userMessage();
         }
 
-        return \Illuminate\Support\Facades\View::make('laranail-db-console-webui::livewire.account-manager', ['accounts' => $accounts]);
+        return \Illuminate\Support\Facades\View::make('laranail/db-console-webui::livewire.account-manager', ['accounts' => $accounts]);
     }
 
     /**

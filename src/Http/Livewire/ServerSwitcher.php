@@ -8,6 +8,7 @@ use Livewire\Component;
 use Livewire\Attributes\Session;
 use Illuminate\Contracts\View\View;
 use Simtabi\Laranail\DBConsole\Servers\ServerRegistry;
+use Simtabi\Laranail\DBConsoleWebUI\Support\BrowserEvents;
 
 /**
  * Lets the operator pick the active server. It only lists servers the
@@ -27,7 +28,10 @@ final class ServerSwitcher extends Component
         $registry = app(ServerRegistry::class);
         if ($registry->has($server)) {
             $this->active = $server;
-            $this->dispatch('db-console:server-changed', server: $server);
+            $this->dispatch(BrowserEvents::SERVER_CHANGED, server: $server);
+            // Deprecated bare name, dispatched beside the scoped one so existing
+            // listeners keep firing. Earliest removal: the next minor after 0.1.
+            $this->dispatch(BrowserEvents::LEGACY_SERVER_CHANGED, server: $server);
         }
     }
 
@@ -48,6 +52,6 @@ final class ServerSwitcher extends Component
             $this->active = $servers[0]['name'];
         }
 
-        return \Illuminate\Support\Facades\View::make('laranail-db-console-webui::livewire.server-switcher', ['servers' => $servers]);
+        return \Illuminate\Support\Facades\View::make('laranail/db-console-webui::livewire.server-switcher', ['servers' => $servers]);
     }
 }

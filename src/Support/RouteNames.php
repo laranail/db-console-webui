@@ -10,7 +10,8 @@ namespace Simtabi\Laranail\DBConsoleWebUI\Support;
  * `laranail-db-console-webui.<page>`.
  *
  * The pre-0.1 bare names (`db-console-webui.<page>`) are no longer registered;
- * they still resolve through {@see \Simtabi\Laranail\DBConsoleWebUI\Routing\BareRouteNameResolver}.
+ * they still resolve through package-tools' `BareRouteNameAliases`, declared on
+ * the package in the service provider with {@see self::legacyMap()}.
  */
 final class RouteNames
 {
@@ -28,6 +29,22 @@ final class RouteNames
     public static function name(string $page): string
     {
         return self::PREFIX . $page;
+    }
+
+    /**
+     * Deprecated bare name => scoped name, for every page.
+     *
+     * @return array<string, string>
+     */
+    public static function legacyMap(): array
+    {
+        $map = [];
+
+        foreach (self::PAGES as $page) {
+            $map[self::LEGACY_PREFIX . $page] = self::name($page);
+        }
+
+        return $map;
     }
 
     /**

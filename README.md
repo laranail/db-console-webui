@@ -54,7 +54,7 @@ The UI mounts at `/db-console` (configurable) and is guarded by the `EnsureCanMa
 @endcan
 ```
 
-Route names are `laranail-db-console-webui.<page>` (`dashboard`, `databases`, `accounts`, `roles`, `webhooks`). The bare `db-console-webui.<page>` names are deprecated aliases that `route()` still resolves; `Route::has()` and `routeIs()` see only the scoped names.
+Route names are `laranail-db-console-webui.<page>` (`dashboard`, `databases`, `accounts`, `roles`, `webhooks`), and Livewire components `laranail-db-console-webui.<name>`. The bare `db-console-webui.<page>` route names and `db-console-webui.<name>` components are deprecated aliases that still work; `Route::has()` and `routeIs()` see only the scoped route names. Views and translations answer to `laranail/db-console-webui::`.
 
 The full walkthrough is in [Getting started](docs/getting-started.md); everything else is in the [documentation index](#documentation).
 

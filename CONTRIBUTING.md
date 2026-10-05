@@ -18,5 +18,5 @@ The web UI is a **thin wrapper** over `laranail/db-console`. The one rule that g
 
 - PHP `^8.4.1 || ^8.5`, `declare(strict_types=1)` everywhere.
 - Pint (Laravel preset), PHPStan (level 6), Rector must pass.
-- Livewire component names are `db-console-webui.<name>`; views are `db-console-webui::livewire.<name>`.
+- Livewire component names are `laranail-db-console-webui.<name>`; views are `laranail/db-console-webui::livewire.<name>`, and the package's own strings are looked up with `Support\Translations::get('ui.<key>')`, never a bare `__()`, so hyphen-namespace overrides keep applying. The bare `db-console-webui.<name>` components and the `laranail-db-console-webui::` namespaces are still registered for hosts, but new code inside the package uses the scoped names. `tests/Feature/NamingConventionTest.php` reads the live registries and fails on a new bare name.
 - No AI attribution in commits or PRs.

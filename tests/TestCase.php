@@ -8,14 +8,26 @@ use Flux\FluxServiceProvider;
 use Livewire\LivewireServiceProvider;
 use Illuminate\Foundation\Application;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Simtabi\Laranail\DBConsoleWebUI\Support\LivewireNames;
 use Simtabi\Laranail\Console\Providers\ConsoleServiceProvider;
 use Simtabi\Laranail\DBConsole\Providers\DBConsoleServiceProvider;
 use Simtabi\Laranail\Enumerator\Providers\EnumeratorServiceProvider;
+use Simtabi\Laranail\Package\Tools\Support\Routing\BareRouteNameAliases;
 use Simtabi\Laranail\Package\Tools\Providers\PackageToolsServiceProvider;
 use Simtabi\Laranail\DBConsoleWebUI\Providers\DBConsoleWebUIServiceProvider;
 
 abstract class TestCase extends Orchestra
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Deprecation notices are announced once per PROCESS by design, so a
+        // test asserting one must not depend on whether an earlier test fired it.
+        BareRouteNameAliases::forgetWarnings();
+        LivewireNames::forgetWarnings();
+    }
+
     /**
      * @return list<class-string>
      */
