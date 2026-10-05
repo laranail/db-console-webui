@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `illuminate/console`, `illuminate/http`, `illuminate/routing` are now declared in `require` at `^13.0`. `src/` imports them, and they were only arriving transitively.
 - The access middleware and README check laranail/db-console's scoped abilities
   (`laranail-db-console.database.view`, `laranail-db-console.server.view`). db-console still answers the
   old `db-console.*` names as deprecated aliases, so a host policy granting either keeps working.
