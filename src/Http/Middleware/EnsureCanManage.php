@@ -32,8 +32,8 @@ final readonly class EnsureCanManage
 
         // Any DBConsole ability at all is the minimum bar to see the UI; the
         // core enforces the specific permission on every action.
-        if (! $request->user()->can('db-console.database.view')
-            && ! $request->user()->can('db-console.server.view')) {
+        if (! $request->user()->can('laranail-db-console.database.view')
+            && ! $request->user()->can('laranail-db-console.server.view')) {
             abort(403, 'You do not have access to the database console.');
         }
 

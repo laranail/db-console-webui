@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The access middleware and README check laranail/db-console's scoped abilities
+  (`laranail-db-console.database.view`, `laranail-db-console.server.view`). db-console still answers the
+  old `db-console.*` names as deprecated aliases, so a host policy granting either keeps working.
+
 - Route names are vendor-scoped: `db-console-webui.<page>` is now `laranail-db-console-webui.<page>` for `dashboard`, `databases`, `accounts`, `roles` and `webhooks`.
 - The install command is `laranail::db-console-webui.install`.
 - The deprecated bare route names are served by package-tools' shared `BareRouteNameAliases`, declared with `$package->hasDeprecatedRouteNames()`, instead of the package's own resolver. Behaviour is unchanged: one logged warning per name, chained to any resolver installed earlier. The warning now reads "the route name [...] is deprecated and will stop resolving no earlier than the next minor after 0.1; use [...]", and is announced once per process rather than once per resolver instance.

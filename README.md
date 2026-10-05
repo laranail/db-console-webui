@@ -48,7 +48,7 @@ The UI mounts at `/db-console` (configurable) and is guarded by the `EnsureCanMa
 
 ```blade
 {{-- resources/views/layouts/partials/admin-nav.blade.php --}}
-@can('db-console.database.view')
+@can('laranail-db-console.database.view')
     <a href="{{ route('laranail-db-console-webui.dashboard') }}">Databases</a>
     <a href="{{ route('laranail-db-console-webui.accounts') }}">Database accounts</a>
 @endcan
