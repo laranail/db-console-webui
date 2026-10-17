@@ -7,7 +7,6 @@ use Illuminate\Http\Response;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Simtabi\Laranail\DBConsole\Authorization\DeprecatedAbilities;
 use Simtabi\Laranail\DBConsoleWebUI\Http\Middleware\EnsureCanManage;
 
 /*
@@ -47,22 +46,20 @@ it('refuses a signed-in user with no db-console ability', function (): void {
     expect(passThroughEnsureCanManage(new User))->toBe(403);
 });
 
-it('checks the scoped names, not the deprecated bare aliases', function (): void {
-    DeprecatedAbilities::forgetWarnings();
-    $notices = [];
-    set_error_handler(function (int $level, string $message) use (&$notices): bool {
-        $notices[] = $message;
+it('asks the gate for scoped names only, never a bare db-console.* one', function (): void {
+    // Recorded at the gate itself, so this holds whether or not the db-console
+    // release in use still defines the bare aliases (they were removed after 0.1.1).
+    $asked = [];
+    Gate::before(function (?User $user, string $ability) use (&$asked): ?bool {
+        $asked[] = $ability;
 
-        return true;
-    }, E_USER_DEPRECATED);
+        return null;
+    });
 
-    try {
-        passThroughEnsureCanManage(new User);
-    } finally {
-        restore_error_handler();
-    }
+    passThroughEnsureCanManage(new User);
 
-    expect($notices)->toBe([]);
+    expect($asked)->not->toBeEmpty()
+        ->each->toStartWith('laranail-db-console.');
 });
 
 it('refuses a guest', function (): void {
