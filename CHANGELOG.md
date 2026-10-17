@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Accounts can be dropped from the account manager.** Pick a listed account, type its username again
+  (the core's `DropAccountRequest` rule), and it calls `AccountManager::drop`. The component's docblock
+  promised this; only create existed.
+- **The screens read where a server runs, from db-console's hosting profile:**
+  - the account host starts at `ServerRegistry::defaultAccountHost()` (`%` on a managed MySQL), not a
+    hard-coded `localhost`, and is not shown where the engine has no host scoping;
+  - the server switcher shows a managed server's provider;
+  - the database wizard reports a drop stopped by a failed backup on its own (`BackupFailed`), and on a
+    managed server says the provider's point-in-time recovery is the restore path.
 - **Existing accounts and databases are a choice, not a silent success.** db-console now refuses to create an account or database that already exists unless the operator may adopt it, and says which policies they may resubmit with. The account manager and database wizard show those choices (adopt; for an account, also adopt and set a new generated password) with the risk of each, only when the refusal offers them, and never send a policy the refusal did not offer. An adopted resource is reported as adopted, not created. `Http\Livewire\Concerns\RespondsToRefusals` holds the shared handling.
 - **Assurance refusals link to the host's confirmation page.** When db-console needs a recent identity confirmation, the components show a "Confirm your identity" link to the host's `password.confirm` route when it exists. The host authenticates; the WebUI only points at it.
 

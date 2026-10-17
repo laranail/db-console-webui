@@ -6,8 +6,8 @@ The Livewire components and the core service each one calls.
 |---|---|---|
 | `ServerSwitcher` | `laranail-db-console-webui.server-switcher` | `ServerRegistry` |
 | `Dashboard` | `laranail-db-console-webui.dashboard` | `DatabaseManager::list` |
-| `DatabaseWizard` | `laranail-db-console-webui.database-wizard` | `DatabaseManager::create` / `drop` + `RuleProvider` |
-| `AccountManager` | `laranail-db-console-webui.account-manager` | `AccountManager::create` / `list` + `RuleProvider` |
+| `DatabaseWizard` | `laranail-db-console-webui.database-wizard` | `DatabaseManager::create` / `drop` + `ServerRegistry::hosting` + `RuleProvider` |
+| `AccountManager` | `laranail-db-console-webui.account-manager` | `AccountManager::create` / `list` / `drop` + `ServerRegistry::defaultAccountHost` / `capabilities` + `RuleProvider` |
 | `RoleManager` | `laranail-db-console-webui.role-manager` | `RbacDriver` (read-only) |
 | `WebhookManager` | `laranail-db-console-webui.webhook-manager` | `Webhooks\WebhookManager` + `RuleProvider` |
 
