@@ -9,7 +9,7 @@ beforeEach(function (): void {
     // A local sqlite server so render()'s list() has something to resolve.
     config()->set('database.connections.ui_admin', ['driver' => 'sqlite', 'database' => ':memory:', 'prefix' => '']);
     config()->set('laranail.db-console.servers.local', ['engine' => 'sqlite', 'connection' => 'ui_admin', 'tls' => ['enabled' => false]]);
-    config()->set('laranail.db-console.default_server', 'local');
+    config()->set('laranail.db-console.default', 'local');
     $this->migrateCatalog();
 });
 

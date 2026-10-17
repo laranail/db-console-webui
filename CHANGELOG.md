@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `tests/Feature/NamingConventionTest.php`, which reads the live router, rate limiter, Artisan and middleware registries and fails on any bare name the package owns.
 - `Support\Translations`, the one place the package looks up its own strings. It reads the canonical `laranail/db-console-webui::` namespace and falls back to an override made against `laranail-db-console-webui::` when the canonical line is still the packaged default, the same rule as `laranail/console` 0.1.5.
 - `Support\LivewireNames` and `Support\BrowserEvents`, the single source of the package's Livewire component names and browser event names, and `RouteNames::legacyMap()`.
+- A `live` CI job and Pest group that drive the database wizard and the account manager against real MySQL 8.4 and PostgreSQL 18, each as a restricted admin: on MySQL exactly db-console's recommended minimal grant with `sql_require_primary_key=ON`, on Postgres a `CREATEDB CREATEROLE` role that is not a superuser. The wizard creates and drops a database, and an account the manager creates logs in with the password it shows. The group skips without its `DB_CONSOLE_LIVE_*` variables and runs in CI with `--fail-on-skipped`; `LiveAdminGrantTest` keeps the workflow's grant equal to db-console's `MinimalAdminGrant`.
 - A direct `laranail/package-tools ^0.1.3` requirement. The package used it only through `laranail/db-console` before, and now uses its `BareRouteNameAliases` and naming assertions.
 
 ### Changed

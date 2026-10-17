@@ -170,7 +170,7 @@ it('runs the deprecated bare install command through the scoped one, with a warn
 it('mounts a component under its deprecated bare name, announcing the replacement once', function (): void {
     config()->set('database.connections.ui_admin', ['driver' => 'sqlite', 'database' => ':memory:', 'prefix' => '']);
     config()->set('laranail.db-console.servers.local', ['engine' => 'sqlite', 'connection' => 'ui_admin', 'tls' => ['enabled' => false]]);
-    config()->set('laranail.db-console.default_server', 'local');
+    config()->set('laranail.db-console.default', 'local');
     $this->migrateCatalog();
     Gate::before(fn ($user = null): bool => true);
 
@@ -211,7 +211,7 @@ it('mounts a component under its deprecated bare name, announcing the replacemen
 it('dispatches the scoped server-changed browser event, and the deprecated bare one beside it', function (): void {
     config()->set('database.connections.ui_admin', ['driver' => 'sqlite', 'database' => ':memory:', 'prefix' => '']);
     config()->set('laranail.db-console.servers.local', ['engine' => 'sqlite', 'connection' => 'ui_admin', 'tls' => ['enabled' => false]]);
-    config()->set('laranail.db-console.default_server', 'local');
+    config()->set('laranail.db-console.default', 'local');
     $this->migrateCatalog();
     Gate::before(fn ($user = null): bool => true);
 
