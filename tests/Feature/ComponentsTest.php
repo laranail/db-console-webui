@@ -14,7 +14,7 @@ use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\WebhookManager;
 beforeEach(function (): void {
     config()->set('database.connections.ui_admin', ['driver' => 'sqlite', 'database' => ':memory:', 'prefix' => '']);
     config()->set('laranail.db-console.servers.local', ['engine' => 'sqlite', 'connection' => 'ui_admin', 'tls' => ['enabled' => false]]);
-    config()->set('laranail.db-console.default_server', 'local');
+    config()->set('laranail.db-console.default', 'local');
     $this->migrateCatalog();
     Gate::before(fn ($user = null): bool => true);
 });
@@ -46,8 +46,13 @@ it('renders the webhook manager', function (): void {
 });
 
 it('surfaces a core exception as a sanitized error, not a crash', function (): void {
-    // An unknown server → the core throws; the UI shows userMessage(), no leak.
-    config()->set('laranail.db-console.default_server', 'nonexistent');
+    // A server whose admin connection is not defined → the core throws; the UI
+    // shows userMessage(), no leak. The dashboard reads the first registered
+    // server unless the session names one, so pin it there.
+    config()->set('laranail.db-console.servers.local.connection', 'undefined_admin');
+    session()->put('db-console.active-server', 'local');
 
-    Livewire::test(Dashboard::class)->assertOk();   // renders the error state, does not 500
+    Livewire::test(Dashboard::class)
+        ->assertOk()   // renders the error state, does not 500
+        ->assertSee("Server 'local' is misconfigured");
 });
