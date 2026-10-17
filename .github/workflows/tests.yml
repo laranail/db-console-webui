@@ -26,3 +26,76 @@ jobs:
       # line only once that default is ["*"].
       laravel-versions: '["*"]'
       php-extensions: 'dom, curl, libxml, mbstring, zip, fileinfo, pdo, sqlite3, pdo_sqlite, pdo_mysql, pdo_pgsql'
+
+  # The matrix above runs on SQLite, which has no accounts and whose databases
+  # are files, so nothing there can say whether a click in these screens
+  # provisions anything on a real server. This job drives the Livewire
+  # components against MySQL 8.4 and PostgreSQL 18, each as a restricted admin
+  # shaped like a managed service's: on MySQL exactly the grant db-console's
+  # doctor recommends (MinimalAdminGrant), with sql_require_primary_key=ON the
+  # way DigitalOcean runs it; on Postgres a CREATEDB CREATEROLE role that is
+  # not a superuser. --fail-on-skipped turns a missing variable into a failure
+  # rather than an empty pass. The engine matrix itself lives in db-console;
+  # this proves the screens on the versions DigitalOcean offers.
+  live:
+    name: live screens · mysql 8.4 · pgsql 18
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Reads the repository and nothing else; the token is used only to fetch
+    # dependencies from public repositories.
+    permissions:
+      contents: read
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: secret
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd "mysqladmin ping -h 127.0.0.1 -uroot -psecret" --health-interval 5s --health-timeout 5s --health-retries 20
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: secret
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.4'
+          extensions: 'dom, curl, libxml, mbstring, zip, fileinfo, pdo, pdo_sqlite, pdo_mysql, pdo_pgsql'
+          coverage: none
+          tools: composer:v2
+      - name: Install dependencies
+        env:
+          COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ secrets.GITHUB_TOKEN }}"}}'
+        run: composer update --prefer-stable --prefer-dist --no-interaction --no-progress
+      - name: Create the recommended minimal MySQL admin (not root)
+        run: |
+          {
+            # db-console's recommended grant, verbatim between the markers.
+            # LiveAdminGrantTest fails if it drifts from MinimalAdminGrant.
+            # >>> minimal-admin
+            echo "CREATE USER 'db_console_admin'@'%' IDENTIFIED BY 'secret';"
+            echo "GRANT CREATE USER ON *.* TO 'db_console_admin'@'%';"
+            echo "GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, DROP, INDEX, REFERENCES, CREATE TEMPORARY TABLES, LOCK TABLES, EXECUTE, CREATE VIEW, SHOW VIEW, CREATE ROUTINE, ALTER ROUTINE, EVENT, TRIGGER ON *.* TO 'db_console_admin'@'%' WITH GRANT OPTION;"
+            # <<< minimal-admin
+            echo "SET PERSIST sql_require_primary_key = ON;"
+          } | docker exec -i "${{ job.services.mysql.id }}" mysql -uroot -psecret
+      - name: Create a restricted Postgres admin (CREATEDB CREATEROLE, not a superuser)
+        run: >-
+          docker exec "${{ job.services.postgres.id }}"
+          psql -v ON_ERROR_STOP=1 -U postgres
+          -c "CREATE ROLE db_console_admin WITH LOGIN PASSWORD 'secret' CREATEDB CREATEROLE NOSUPERUSER"
+      - name: Live screens
+        env:
+          DB_CONSOLE_LIVE_MYSQL_PORT: '3306'
+          DB_CONSOLE_LIVE_MYSQL_ADMIN_USER: db_console_admin
+          DB_CONSOLE_LIVE_MYSQL_ADMIN_PASSWORD: secret
+          DB_CONSOLE_LIVE_PGSQL_PORT: '5432'
+          DB_CONSOLE_LIVE_PGSQL_ADMIN_USER: db_console_admin
+          DB_CONSOLE_LIVE_PGSQL_ADMIN_PASSWORD: secret
+        run: vendor/bin/pest --no-coverage --colors=never --group=live --fail-on-skipped
