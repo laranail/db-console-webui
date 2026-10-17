@@ -162,10 +162,56 @@ it('treats a non-string answer from the previous resolver as no answer', functio
 ]);
 
 it('runs the deprecated bare install command through the scoped one, with a warning', function (): void {
-    $this->artisan('db-console-webui:install')
-        ->expectsOutputToContain('is deprecated and will be removed no earlier than the next minor after 0.1; use [laranail::db-console-webui.install]')
-        ->assertSuccessful();
+    // The install publishes into the Testbench skeleton, which lives inside
+    // vendor/ and outlives the run. Left there, a published view shadows the
+    // package's own on every later local run, so a changed view never shows.
+    $before = skeletonFiles();
+
+    try {
+        $this->artisan('db-console-webui:install')
+            ->expectsOutputToContain('is deprecated and will be removed no earlier than the next minor after 0.1; use [laranail::db-console-webui.install]')
+            ->assertSuccessful()
+            ->run();
+    } finally {
+        removeFilesAddedSince($before);
+    }
+
+    expect(array_diff(skeletonFiles(), $before))->toBe([]);
 });
+
+/**
+ * Every file in the Testbench skeleton application, outside its storage.
+ *
+ * @return list<string>
+ */
+function skeletonFiles(): array
+{
+    $files = [];
+    $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(base_path(), FilesystemIterator::SKIP_DOTS));
+    foreach ($iterator as $file) {
+        $path = (string) $file->getPathname();
+        if (! str_starts_with($path, storage_path())) {
+            $files[] = $path;
+        }
+    }
+
+    return $files;
+}
+
+/**
+ * @param list<string> $before
+ */
+function removeFilesAddedSince(array $before): void
+{
+    foreach (array_diff(skeletonFiles(), $before) as $added) {
+        @unlink($added);
+
+        // Remove the directories the publish created, up to one that existed.
+        for ($dir = dirname($added); $dir !== base_path() && is_dir($dir) && (glob($dir . '/*') ?: []) === []; $dir = dirname($dir)) {
+            @rmdir($dir);
+        }
+    }
+}
 
 it('mounts a component under its deprecated bare name, announcing the replacement once', function (): void {
     config()->set('database.connections.ui_admin', ['driver' => 'sqlite', 'database' => ':memory:', 'prefix' => '']);

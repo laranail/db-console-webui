@@ -3,6 +3,21 @@
 
     @if ($flash)<flux:callout variant="success">{{ $flash }}</flux:callout>@endif
     @if ($error)<flux:callout variant="danger">{{ $error }}</flux:callout>@endif
+    @if ($confirmUrl)
+        <flux:button :href="$confirmUrl" variant="filled" icon="shield-check">{{ \Simtabi\Laranail\DBConsoleWebUI\Support\Translations::get('ui.confirm_identity') }}</flux:button>
+    @endif
+    @if ($adoptOptions !== [])
+        <flux:callout variant="warning">
+            <flux:callout.text>{{ \Simtabi\Laranail\DBConsoleWebUI\Support\Translations::get('ui.adopt_risk') }}</flux:callout.text>
+            @if (in_array('adopt', $adoptOptions, true))
+                <flux:button wire:click="adopt('adopt')">{{ \Simtabi\Laranail\DBConsoleWebUI\Support\Translations::get('ui.adopt_account') }}</flux:button>
+            @endif
+            @if (in_array('adopt_and_apply', $adoptOptions, true))
+                <flux:button wire:click="adopt('adopt_and_apply')" variant="danger">{{ \Simtabi\Laranail\DBConsoleWebUI\Support\Translations::get('ui.adopt_account_password') }}</flux:button>
+                <flux:callout.text>{{ \Simtabi\Laranail\DBConsoleWebUI\Support\Translations::get('ui.adopt_password_risk') }}</flux:callout.text>
+            @endif
+        </flux:callout>
+    @endif
     @if ($generatedPassword)
         <flux:callout variant="warning" icon="key">
             <flux:callout.heading>{{ \Simtabi\Laranail\DBConsoleWebUI\Support\Translations::get('ui.password_once') }}</flux:callout.heading>
