@@ -3,6 +3,15 @@
 
     @if ($flash)<flux:callout variant="success">{{ $flash }}</flux:callout>@endif
     @if ($error)<flux:callout variant="danger">{{ $error }}</flux:callout>@endif
+    @if ($confirmUrl)
+        <flux:button :href="$confirmUrl" variant="filled" icon="shield-check">{{ \Simtabi\Laranail\DBConsoleWebUI\Support\Translations::get('ui.confirm_identity') }}</flux:button>
+    @endif
+    @if (in_array('adopt', $adoptOptions, true))
+        <flux:callout variant="warning">
+            <flux:callout.text>{{ \Simtabi\Laranail\DBConsoleWebUI\Support\Translations::get('ui.adopt_risk') }}</flux:callout.text>
+            <flux:button wire:click="adopt('adopt')">{{ \Simtabi\Laranail\DBConsoleWebUI\Support\Translations::get('ui.adopt_database') }}</flux:button>
+        </flux:callout>
+    @endif
 
     <form wire:submit="create">
         <flux:input wire:model="name" :label="\Simtabi\Laranail\DBConsoleWebUI\Support\Translations::get('ui.database_name')" />

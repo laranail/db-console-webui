@@ -14,9 +14,11 @@ use Simtabi\Laranail\DBConsole\Servers\ServerRegistry;
 use Simtabi\Laranail\DBConsole\Validation\RuleProvider;
 use Simtabi\Laranail\DBConsole\Services\DatabaseManager;
 use Simtabi\Laranail\DBConsoleWebUI\Support\Translations;
+use Simtabi\Laranail\DBConsole\Enums\ExistingResourcePolicy;
 use Simtabi\Laranail\DBConsole\Exceptions\DBConsoleException;
 use Simtabi\Laranail\DBConsole\Validation\Requests\DropDatabaseRequest;
 use Simtabi\Laranail\DBConsole\Validation\Requests\CreateDatabaseRequest;
+use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\Concerns\RespondsToRefusals;
 
 /**
  * Create and drop databases on the active server. Validation is the CORE's:
@@ -26,6 +28,8 @@ use Simtabi\Laranail\DBConsole\Validation\Requests\CreateDatabaseRequest;
  */
 final class DatabaseWizard extends Component
 {
+    use RespondsToRefusals;
+
     #[Session(key: 'db-console.active-server')]
     public string $active = '';
 
@@ -43,19 +47,26 @@ final class DatabaseWizard extends Component
     public function create(): void
     {
         $this->reset('flash', 'error');
+        $this->clearRefusal();
         $this->validateOnly('name');
 
-        try {
-            app(DatabaseManager::class)->create(
-                $this->server(),
-                new DbName($this->name),
-                new Charset($this->charset),
-            );
-            $this->flash = Translations::get('ui.created');
-            $this->reset('name');
-        } catch (DBConsoleException $e) {
-            $this->error = $e->userMessage();
+        $this->submit(null);
+    }
+
+    /**
+     * Resubmit a refused create with the adopt policy the refusal offered.
+     * A database has no password, so adopt is the only choice.
+     */
+    public function adopt(string $policy): void
+    {
+        if (! $this->offered($policy)) {
+            return;
         }
+
+        $this->reset('flash', 'error');
+        $this->clearRefusal();
+
+        $this->submit(ExistingResourcePolicy::from($policy));
     }
 
     public function drop(): void
@@ -96,6 +107,25 @@ final class DatabaseWizard extends Component
             'name'        => RuleProvider::field(CreateDatabaseRequest::class, 'name'),
             'confirmName' => RuleProvider::field(DropDatabaseRequest::class, 'name'),
         ];
+    }
+
+    private function submit(?ExistingResourcePolicy $onExisting): void
+    {
+        try {
+            $result = app(DatabaseManager::class)->create(
+                $this->server(),
+                new DbName($this->name),
+                new Charset($this->charset),
+                $onExisting,
+            );
+        } catch (DBConsoleException $e) {
+            $this->respondToRefusal($e);
+
+            return;
+        }
+
+        $this->flash = $this->adopted($result) ? Translations::get('ui.adopted_database') : Translations::get('ui.created');
+        $this->reset('name');
     }
 
     private function server(): string

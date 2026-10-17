@@ -12,9 +12,11 @@ use Simtabi\Laranail\DBConsole\Domain\Username;
 use Simtabi\Laranail\DBConsole\Servers\ServerRegistry;
 use Simtabi\Laranail\DBConsole\Validation\RuleProvider;
 use Simtabi\Laranail\DBConsoleWebUI\Support\Translations;
+use Simtabi\Laranail\DBConsole\Enums\ExistingResourcePolicy;
 use Simtabi\Laranail\DBConsole\Exceptions\DBConsoleException;
 use Simtabi\Laranail\DBConsole\Validation\Requests\CreateAccountRequest;
 use Simtabi\Laranail\DBConsole\Services\AccountManager as AccountService;
+use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\Concerns\RespondsToRefusals;
 
 /**
  * Create and drop database accounts on the active server. Validation comes
@@ -23,6 +25,8 @@ use Simtabi\Laranail\DBConsole\Services\AccountManager as AccountService;
  */
 final class AccountManager extends Component
 {
+    use RespondsToRefusals;
+
     #[Session(key: 'db-console.active-server')]
     public string $active = '';
 
@@ -39,21 +43,27 @@ final class AccountManager extends Component
     public function create(): void
     {
         $this->reset('flash', 'error', 'generatedPassword');
+        $this->clearRefusal();
         $this->validate();
 
-        try {
-            $result = app(AccountService::class)->create(
-                $this->server(),
-                new Username($this->username),
-                new Host($this->host),
-                null,   // generate a strong password
-            );
-            $this->generatedPassword = $result->takeGeneratedPassword();
-            $this->flash = Translations::get('ui.created');
-            $this->reset('username');
-        } catch (DBConsoleException $e) {
-            $this->error = $e->userMessage();
+        $this->submit(null);
+    }
+
+    /**
+     * Resubmit a refused create with one of the adopt policies the refusal
+     * offered: adopt the existing account, or adopt it and set a new
+     * generated password. The core still authorizes and confirms both.
+     */
+    public function adopt(string $policy): void
+    {
+        if (! $this->offered($policy)) {
+            return;
         }
+
+        $this->reset('flash', 'error', 'generatedPassword');
+        $this->clearRefusal();
+
+        $this->submit(ExistingResourcePolicy::from($policy));
     }
 
     public function render(): View
@@ -77,6 +87,31 @@ final class AccountManager extends Component
             'username' => RuleProvider::field(CreateAccountRequest::class, 'username'),
             'host'     => RuleProvider::field(CreateAccountRequest::class, 'host'),
         ];
+    }
+
+    private function submit(?ExistingResourcePolicy $onExisting): void
+    {
+        try {
+            $result = app(AccountService::class)->create(
+                $this->server(),
+                new Username($this->username),
+                new Host($this->host),
+                null,   // generate a strong password
+                $onExisting,
+            );
+        } catch (DBConsoleException $e) {
+            $this->respondToRefusal($e);
+
+            return;
+        }
+
+        $this->generatedPassword = $result->takeGeneratedPassword();
+        $this->flash = match (true) {
+            ($result->data['password_applied'] ?? false) === true => Translations::get('ui.adopted_with_password'),
+            $this->adopted($result)                               => Translations::get('ui.adopted_account'),
+            default                                               => Translations::get('ui.created'),
+        };
+        $this->reset('username');
     }
 
     private function server(): string

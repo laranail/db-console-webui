@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Existing accounts and databases are a choice, not a silent success.** db-console now refuses to create an account or database that already exists unless the operator may adopt it, and says which policies they may resubmit with. The account manager and database wizard show those choices (adopt; for an account, also adopt and set a new generated password) with the risk of each, only when the refusal offers them, and never send a policy the refusal did not offer. An adopted resource is reported as adopted, not created. `Http\Livewire\Concerns\RespondsToRefusals` holds the shared handling.
+- **Assurance refusals link to the host's confirmation page.** When db-console needs a recent identity confirmation, the components show a "Confirm your identity" link to the host's `password.confirm` route when it exists. The host authenticates; the WebUI only points at it.
+
 - `Support\RouteNames`, the single source of the package's route names, and `Routing\BareRouteNameResolver`, which keeps the deprecated bare route names resolving through `URL::resolveMissingNamedRoutesUsing()` and defers any other name to a resolver installed before it.
 - `tests/Feature/NamingConventionTest.php`, which reads the live router, rate limiter, Artisan and middleware registries and fails on any bare name the package owns.
 - `Support\Translations`, the one place the package looks up its own strings. It reads the canonical `laranail/db-console-webui::` namespace and falls back to an override made against `laranail-db-console-webui::` when the canonical line is still the packaged default, the same rule as `laranail/console` 0.1.5.
@@ -18,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Requires `laranail/db-console ^0.1.1`, the first release with the existing-resource policy and operator assurance.
 - `illuminate/console`, `illuminate/http`, `illuminate/routing` are now declared in `require` at `^13.0`. `src/` imports them, and they were only arriving transitively.
 - The access middleware and README check laranail/db-console's scoped abilities
   (`laranail-db-console.database.view`, `laranail-db-console.server.view`). db-console still answers the
@@ -40,6 +44,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The bare `db-console:server-changed` browser event. It is still dispatched beside `laranail-db-console-webui:server-changed`. Earliest removal: the next minor after 0.1.
 
 ### Fixed
+
+- **The install-command test left published views in the Testbench skeleton**, inside `vendor/`, where they shadowed the package's own views on every later local run, so a changed view never showed. It now removes what the install added.
 
 - Published translation overrides were never read. `vendor:publish` writes them to `lang/vendor/laranail/db-console-webui`, but the package translated through `laranail-db-console-webui::`, which reads `lang/vendor/laranail-db-console-webui`. The package now translates through the slash namespace, while still honouring overrides made against the hyphen one.
 - The customize-a-screen recipe named `resources/views/vendor/db-console-webui/` as the override directory; it is `resources/views/vendor/laranail-db-console-webui/`.
