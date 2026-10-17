@@ -28,15 +28,31 @@
     <form wire:submit="create">
         <flux:input wire:model="username" :label="\Simtabi\Laranail\DBConsoleWebUI\Support\Translations::get('ui.username')" />
         @error('username')<flux:text variant="danger">{{ $message }}</flux:text>@enderror
-        <flux:input wire:model="host" :label="\Simtabi\Laranail\DBConsoleWebUI\Support\Translations::get('ui.host')" />
-        @error('host')<flux:text variant="danger">{{ $message }}</flux:text>@enderror
+        @if ($scopesHosts)
+            <flux:input wire:model="host" :label="\Simtabi\Laranail\DBConsoleWebUI\Support\Translations::get('ui.host')" />
+            @error('host')<flux:text variant="danger">{{ $message }}</flux:text>@enderror
+        @endif
         <flux:button type="submit" variant="primary">{{ \Simtabi\Laranail\DBConsoleWebUI\Support\Translations::get('ui.create') }}</flux:button>
     </form>
 
     <flux:separator />
     <ul>
         @foreach ($accounts as $account)
-            <li>{{ $account }}</li>
+            <li>
+                {{ $account }}
+                <flux:button size="sm" variant="ghost" wire:click="chooseDrop(@js($account))">{{ \Simtabi\Laranail\DBConsoleWebUI\Support\Translations::get('ui.drop') }}</flux:button>
+            </li>
         @endforeach
     </ul>
+
+    @if ($dropUsername !== '')
+        <form wire:submit="drop">
+            <flux:text>{{ \Simtabi\Laranail\DBConsoleWebUI\Support\Translations::get('ui.drop_account', ['account' => $dropUsername . ($scopesHosts ? '@' . $dropHost : '')]) }}</flux:text>
+            <flux:input wire:model="confirmDrop" :label="\Simtabi\Laranail\DBConsoleWebUI\Support\Translations::get('ui.confirm_drop_account')" />
+            @error('confirmDrop')<flux:text variant="danger">{{ $message }}</flux:text>@enderror
+            @error('dropUsername')<flux:text variant="danger">{{ $message }}</flux:text>@enderror
+            @error('dropHost')<flux:text variant="danger">{{ $message }}</flux:text>@enderror
+            <flux:button type="submit" variant="danger">{{ \Simtabi\Laranail\DBConsoleWebUI\Support\Translations::get('ui.drop') }}</flux:button>
+        </form>
+    @endif
 </div>

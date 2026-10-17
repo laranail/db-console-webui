@@ -224,3 +224,39 @@ it('creates an account through the account manager that can log in with the pass
     expect($whoami)->toBe($engine === 'mysql' ? "{$user}@%" : $user);
     DB::purge("webui_live_{$engine}_{$user}");
 })->with('live engines');
+
+it('creates and drops an account on a managed server without being told its host', function (string $engine): void {
+    webuiLiveSkipUnlessConfigured($engine);
+    webuiLiveServer($engine);
+    config()->set("laranail.db-console.servers.live_{$engine}.hosting", 'generic');
+
+    $user = webuiLiveName('webui_managed');
+    // A managed MySQL scopes new accounts to any host; Postgres has none.
+    $host = $engine === 'mysql' ? '%' : 'localhost';
+    $this->cleanup = [[$engine, 'account', $user, $host]];
+
+    Livewire::test(AccountManager::class)
+        ->assertSet('host', $host)
+        ->set('username', $user)
+        ->call('create')
+        ->assertHasNoErrors()
+        ->assertSet('error', null);
+
+    expect(webuiLiveAccountCount($engine, $user, $host))->toBe(1);
+
+    $listed = $engine === 'mysql' ? "{$user}@%" : $user;
+    $screen = Livewire::test(AccountManager::class)->assertSee($listed);
+    if ($engine === 'mysql') {
+        // The engine's own accounts are the provider's, not the operator's.
+        $screen->assertDontSee('mysql.sys');
+    }
+
+    $screen->call('chooseDrop', $listed)
+        ->set('confirmDrop', $user)
+        ->call('drop')
+        ->assertHasNoErrors()
+        ->assertSet('error', null)
+        ->assertSet('flash', Translations::get('ui.dropped'));
+
+    expect(webuiLiveAccountCount($engine, $user, $host))->toBe(0);
+})->with('live engines');

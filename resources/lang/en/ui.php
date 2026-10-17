@@ -34,4 +34,8 @@ return [
     'adopted_with_password'  => 'Adopted the existing account and set a new password.',
     'adopted_database'       => 'Adopted the existing database.',
     'confirm_identity'       => 'Confirm your identity',
+    'drop_account'           => 'Drop :account?',
+    'confirm_drop_account'   => 'Type the username to confirm',
+    'backup_failed'          => 'The backup failed, so nothing was dropped.',
+    'provider_backups'       => 'No dump is taken before a drop here: the provider\'s point-in-time recovery is the restore path. The drop is logged with the moment to restore to.',
 ];

@@ -7,7 +7,7 @@
         <flux:select wire:model.live="active" @change="$wire.select($event.target.value)">
             @foreach ($servers as $server)
                 <flux:select.option value="{{ $server['name'] }}">
-                    {{ $server['name'] }} ({{ $server['engine'] }})
+                    {{ $server['name'] }} ({{ $server['engine'] }}@if ($server['hosting']) · {{ $server['hosting'] }}@endif)
                 </flux:select.option>
             @endforeach
         </flux:select>

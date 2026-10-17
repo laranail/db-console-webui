@@ -45,6 +45,8 @@ final class ServerSwitcher extends Component
             $servers[] = [
                 'name'   => $name,
                 'engine' => $definition->engine->value,
+                // Self-hosted is the default and gets no badge.
+                'hosting' => $definition->hosting->isManaged() ? $definition->hosting->label() : null,
             ];
         }
 

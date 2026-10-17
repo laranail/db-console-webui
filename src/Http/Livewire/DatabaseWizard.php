@@ -11,6 +11,7 @@ use Illuminate\Contracts\View\View;
 use Simtabi\Laranail\DBConsole\Domain\DbName;
 use Simtabi\Laranail\DBConsole\Domain\Charset;
 use Simtabi\Laranail\DBConsole\Servers\ServerRegistry;
+use Simtabi\Laranail\DBConsole\Exceptions\BackupFailed;
 use Simtabi\Laranail\DBConsole\Validation\RuleProvider;
 use Simtabi\Laranail\DBConsole\Services\DatabaseManager;
 use Simtabi\Laranail\DBConsoleWebUI\Support\Translations;
@@ -25,6 +26,11 @@ use Simtabi\Laranail\DBConsoleWebUI\Http\Livewire\Concerns\RespondsToRefusals;
  * the rules come from RuleProvider::field(...) so the UI can never disagree
  * with the CLI or API about what a valid name is. Every action is a core
  * service call; errors render the exception's userMessage().
+ *
+ * A drop stopped by a failed backup says so on its own, since nothing was
+ * dropped and the fix is the backup, not the drop. On a server whose
+ * hosting keeps point-in-time recovery the screen says that is the restore
+ * path, because the core takes no dump there.
  */
 final class DatabaseWizard extends Component
 {
@@ -43,6 +49,8 @@ final class DatabaseWizard extends Component
     public ?string $flash = null;
 
     public ?string $error = null;
+
+    public bool $backupFailed = false;
 
     public function create(): void
     {
@@ -71,13 +79,16 @@ final class DatabaseWizard extends Component
 
     public function drop(): void
     {
-        $this->reset('flash', 'error');
+        $this->reset('flash', 'error', 'backupFailed');
         $this->validateOnly('confirmName');
 
         try {
             app(DatabaseManager::class)->drop($this->server(), new DbName($this->confirmName));
             $this->flash = Translations::get('ui.dropped');
             $this->reset('confirmName');
+        } catch (BackupFailed $e) {
+            $this->backupFailed = true;
+            $this->error = $e->userMessage();
         } catch (DBConsoleException $e) {
             $this->error = $e->userMessage();
         }
@@ -92,7 +103,10 @@ final class DatabaseWizard extends Component
             $this->error ??= $e->userMessage();
         }
 
-        return \Illuminate\Support\Facades\View::make('laranail/db-console-webui::livewire.database-wizard', ['databases' => $databases]);
+        return \Illuminate\Support\Facades\View::make('laranail/db-console-webui::livewire.database-wizard', [
+            'databases'       => $databases,
+            'providerBackups' => app(ServerRegistry::class)->hosting($this->server())->providerBackups,
+        ]);
     }
 
     /**
