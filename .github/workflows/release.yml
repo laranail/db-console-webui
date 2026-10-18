@@ -18,6 +18,10 @@ jobs:
     name: Publish GitHub release + SBOM
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      # The SBOM is named after the repository, so a copy of this workflow in
+      # another package cannot ship this package's name (v0.1.1 did, the other way).
+      SBOM_FILE: ${{ github.event.repository.name }}.cdx.json
 
     steps:
       - name: Checkout
@@ -38,7 +42,7 @@ jobs:
         with:
           path: .
           format: cyclonedx-json
-          output-file: db-console-webui.cdx.json
+          output-file: ${{ env.SBOM_FILE }}
           upload-artifact: false
           upload-release-assets: false   # the release step below attaches the SBOM (avoids a duplicate asset)
 
@@ -59,4 +63,4 @@ jobs:
         with:
           generate_release_notes: true
           body_path: release-notes.md
-          files: db-console-webui.cdx.json
+          files: ${{ env.SBOM_FILE }}
