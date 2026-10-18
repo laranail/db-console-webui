@@ -105,7 +105,7 @@ Questions in [GitHub Discussions](https://github.com/laranail/db-console-webui/d
 
 ## Contributing & security
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Report vulnerabilities per [SECURITY.md](SECURITY.md) (`opensource@simtabi.com`), never in a public issue.
+See [CONTRIBUTING.md](CONTRIBUTING.md). Report vulnerabilities per [SECURITY.md](SECURITY.md): through GitHub private vulnerability reporting (preferred), or to `security@simtabi.com`, never in a public issue.
 
 ## License
 
