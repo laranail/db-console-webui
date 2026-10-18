@@ -13,8 +13,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   is. `SECURITY.md` gains a supply-chain section naming the SBOM, the weekly `composer audit` and
   Dependabot.
 
+### Changed
+
+- `release.yml` fails a tag whose version has no non-empty `CHANGELOG.md` section, instead of
+  publishing a "See CHANGELOG" stub as the release description.
+- The Tests workflow sets `permissions: contents: read` at the top level, so the reusable `pest` call
+  no longer inherits the default token scope.
+
 ### Fixed
 
+- **The README sent vulnerability reports to the community inbox.** It now points at `SECURITY.md`'s
+  channels: GitHub private vulnerability reporting, or `security@simtabi.com`.
+- **The install instructions could not resolve.** The package is not on Packagist; README and
+  `docs/installation.md` now list the VCS repositories a consumer adds to their root `composer.json`
+  and require `^0.1`. The licence badge is a static MIT badge instead of a Packagist one that
+  rendered "invalid".
 - **The release SBOM is named after this package.** `release.yml` wrote and attached it as
   `db-console.cdx.json`, copied from laranail/db-console, so v0.1.1's asset carries the other package's
   name. Releases from now on attach `db-console-webui.cdx.json`, derived from the repository name so
