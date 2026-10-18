@@ -4,8 +4,24 @@ Install the web UI, mount it, wire the assets, and guard access.
 
 ## Install
 
+`laranail/db-console-webui` is not on Packagist. Add its VCS repository, and one for every `laranail/*` package it pulls in, to your application's root `composer.json` (Composer ignores a dependency's own `repositories`), and keep Packagist from serving the `laranail/*` names:
+
+```json
+"repositories": [
+    { "type": "vcs", "url": "https://github.com/laranail/db-console-webui" },
+    { "type": "vcs", "url": "https://github.com/laranail/db-console" },
+    { "type": "vcs", "url": "https://github.com/laranail/package-tools" },
+    { "type": "vcs", "url": "https://github.com/laranail/console" },
+    { "type": "vcs", "url": "https://github.com/laranail/enumerator" },
+    { "type": "composer", "url": "https://repo.packagist.org", "exclude": ["laranail/*"] },
+    { "packagist.org": false }
+]
+```
+
+Then require it and run the installer:
+
 ```bash
-composer require laranail/db-console-webui
+composer require laranail/db-console-webui:^0.1
 php artisan laranail::db-console-webui.install
 ```
 
