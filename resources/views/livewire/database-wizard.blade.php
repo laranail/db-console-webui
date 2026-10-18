@@ -2,7 +2,14 @@
     <flux:heading size="lg">{{ \Simtabi\Laranail\DBConsoleWebUI\Support\Translations::get('ui.databases') }}</flux:heading>
 
     @if ($flash)<flux:callout variant="success">{{ $flash }}</flux:callout>@endif
-    @if ($error)<flux:callout variant="danger">{{ $error }}</flux:callout>@endif
+    @if ($backupFailed)
+        <flux:callout variant="danger" icon="shield-exclamation">
+            <flux:callout.heading>{{ \Simtabi\Laranail\DBConsoleWebUI\Support\Translations::get('ui.backup_failed') }}</flux:callout.heading>
+            <flux:callout.text>{{ $error }}</flux:callout.text>
+        </flux:callout>
+    @elseif ($error)
+        <flux:callout variant="danger">{{ $error }}</flux:callout>
+    @endif
     @if ($confirmUrl)
         <flux:button :href="$confirmUrl" variant="filled" icon="shield-check">{{ \Simtabi\Laranail\DBConsoleWebUI\Support\Translations::get('ui.confirm_identity') }}</flux:button>
     @endif
@@ -26,6 +33,12 @@
             <li>{{ $database }}</li>
         @endforeach
     </ul>
+
+    @if ($providerBackups)
+        <flux:callout variant="secondary" icon="information-circle">
+            <flux:callout.text>{{ \Simtabi\Laranail\DBConsoleWebUI\Support\Translations::get('ui.provider_backups') }}</flux:callout.text>
+        </flux:callout>
+    @endif
 
     <form wire:submit="drop">
         <flux:input wire:model="confirmName" :label="\Simtabi\Laranail\DBConsoleWebUI\Support\Translations::get('ui.confirm_drop')" />
