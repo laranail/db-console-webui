@@ -7,18 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
-
-- **The release SBOM is named after this package.** `release.yml` wrote and attached it as
-  `db-console.cdx.json`, copied from laranail/db-console, so v0.1.1's asset carries the other package's
-  name. Releases from now on attach `db-console-webui.cdx.json`, derived from the repository name so
-  a copy of the workflow elsewhere cannot carry this one's.
-
 ### Added
 
 - **`docs/release.md`**: how a version is cut, what the release workflow publishes, and what the SBOM
   is. `SECURITY.md` gains a supply-chain section naming the SBOM, the weekly `composer audit` and
   Dependabot.
+
+### Changed
+
+- `release.yml` fails a tag whose version has no non-empty `CHANGELOG.md` section, instead of
+  publishing a "See CHANGELOG" stub as the release description.
+- The Tests workflow sets `permissions: contents: read` at the top level, so the reusable `pest` call
+  no longer inherits the default token scope.
+
+### Fixed
+
+- **The README sent vulnerability reports to the community inbox.** It now points at `SECURITY.md`'s
+  channels: GitHub private vulnerability reporting, or `security@simtabi.com`.
+- **The install instructions could not resolve.** The package is not on Packagist; README and
+  `docs/installation.md` now list the VCS repositories a consumer adds to their root `composer.json`
+  and require `^0.1`. The licence badge is a static MIT badge instead of a Packagist one that
+  rendered "invalid".
+- **The release SBOM is named after this package.** `release.yml` wrote and attached it as
+  `db-console.cdx.json`, copied from laranail/db-console, so v0.1.1's asset carries the other package's
+  name. Releases from now on attach `db-console-webui.cdx.json`, derived from the repository name so
+  a copy of the workflow elsewhere cannot carry this one's.
 
 ## [0.1.1] - 2026-10-18
 
@@ -35,7 +48,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     managed server says the provider's point-in-time recovery is the restore path.
 - **Existing accounts and databases are a choice, not a silent success.** db-console now refuses to create an account or database that already exists unless the operator may adopt it, and says which policies they may resubmit with. The account manager and database wizard show those choices (adopt; for an account, also adopt and set a new generated password) with the risk of each, only when the refusal offers them, and never send a policy the refusal did not offer. An adopted resource is reported as adopted, not created. `Http\Livewire\Concerns\RespondsToRefusals` holds the shared handling.
 - **Assurance refusals link to the host's confirmation page.** When db-console needs a recent identity confirmation, the components show a "Confirm your identity" link to the host's `password.confirm` route when it exists. The host authenticates; the WebUI only points at it.
-
 - `Support\RouteNames`, the single source of the package's route names, and `Routing\BareRouteNameResolver`, which keeps the deprecated bare route names resolving through `URL::resolveMissingNamedRoutesUsing()` and defers any other name to a resolver installed before it.
 - `tests/Feature/NamingConventionTest.php`, which reads the live router, rate limiter, Artisan and middleware registries and fails on any bare name the package owns.
 - `Support\Translations`, the one place the package looks up its own strings. It reads the canonical `laranail/db-console-webui::` namespace and falls back to an override made against `laranail-db-console-webui::` when the canonical line is still the packaged default, the same rule as `laranail/console` 0.1.5.
@@ -50,7 +62,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The access middleware and README check laranail/db-console's scoped abilities
   (`laranail-db-console.database.view`, `laranail-db-console.server.view`). db-console still answers the
   old `db-console.*` names as deprecated aliases, so a host policy granting either keeps working.
-
 - Route names are vendor-scoped: `db-console-webui.<page>` is now `laranail-db-console-webui.<page>` for `dashboard`, `databases`, `accounts`, `roles` and `webhooks`.
 - The install command is `laranail::db-console-webui.install`.
 - The deprecated bare route names are served by package-tools' shared `BareRouteNameAliases`, declared with `$package->hasDeprecatedRouteNames()`, instead of the package's own resolver. Behaviour is unchanged: one logged warning per name, chained to any resolver installed earlier. The warning now reads "the route name [...] is deprecated and will stop resolving no earlier than the next minor after 0.1; use [...]", and is announced once per process rather than once per resolver instance.
@@ -70,7 +81,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **The install-command test left published views in the Testbench skeleton**, inside `vendor/`, where they shadowed the package's own views on every later local run, so a changed view never showed. It now removes what the install added.
-
 - Published translation overrides were never read. `vendor:publish` writes them to `lang/vendor/laranail/db-console-webui`, but the package translated through `laranail-db-console-webui::`, which reads `lang/vendor/laranail-db-console-webui`. The package now translates through the slash namespace, while still honouring overrides made against the hyphen one.
 - The customize-a-screen recipe named `resources/views/vendor/db-console-webui/` as the override directory; it is `resources/views/vendor/laranail-db-console-webui/`.
 - `BareRouteNameResolver` passed the previously installed resolver's answer through unchecked, so a foreign resolver returning anything but a string (an object, an int, an array) raised a `TypeError` inside `route()` under `strict_types`. A non-string answer now reads as "not resolved", and `route()` reports the missing route as before.

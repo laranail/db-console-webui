@@ -2,7 +2,7 @@
 
 [![Tests](https://img.shields.io/github/actions/workflow/status/laranail/db-console-webui/tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/laranail/db-console-webui/actions/workflows/tests.yml)
 [![Static analysis](https://img.shields.io/github/actions/workflow/status/laranail/db-console-webui/static-analysis.yml?branch=main&label=static%20analysis&style=flat-square)](https://github.com/laranail/db-console-webui/actions/workflows/static-analysis.yml)
-[![License MIT](https://img.shields.io/packagist/l/laranail/db-console-webui.svg?style=flat-square)](LICENSE)
+[![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 `laranail/db-console-webui` is not published to Packagist, so there is no registry-version badge to show: see [Install](#install).
 
@@ -14,8 +14,24 @@ The design is deliberate — the UI can never grow its own business logic or val
 
 ## Install
 
+`laranail/db-console-webui` is not on Packagist. Add its VCS repository, and one for every `laranail/*` package it pulls in, to your application's root `composer.json` (Composer ignores a dependency's own `repositories`), and keep Packagist from serving the `laranail/*` names:
+
+```json
+"repositories": [
+    { "type": "vcs", "url": "https://github.com/laranail/db-console-webui" },
+    { "type": "vcs", "url": "https://github.com/laranail/db-console" },
+    { "type": "vcs", "url": "https://github.com/laranail/package-tools" },
+    { "type": "vcs", "url": "https://github.com/laranail/console" },
+    { "type": "vcs", "url": "https://github.com/laranail/enumerator" },
+    { "type": "composer", "url": "https://repo.packagist.org", "exclude": ["laranail/*"] },
+    { "packagist.org": false }
+]
+```
+
+Then require it and run the installer:
+
 ```bash
-composer require laranail/db-console-webui
+composer require laranail/db-console-webui:^0.1
 php artisan laranail::db-console-webui.install
 ```
 
@@ -105,7 +121,7 @@ Questions in [GitHub Discussions](https://github.com/laranail/db-console-webui/d
 
 ## Contributing & security
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Report vulnerabilities per [SECURITY.md](SECURITY.md) (`opensource@simtabi.com`), never in a public issue.
+See [CONTRIBUTING.md](CONTRIBUTING.md). Report vulnerabilities per [SECURITY.md](SECURITY.md): through GitHub private vulnerability reporting (preferred), or to `security@simtabi.com`, never in a public issue.
 
 ## License
 
