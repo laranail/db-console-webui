@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-10-18
+
 ### Added
 
 - **Accounts can be dropped from the account manager.** Pick a listed account, type its username again
@@ -64,4 +66,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial public release.
 
-[Unreleased]: https://github.com/laranail/db-console-webui/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/laranail/db-console-webui/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/laranail/db-console-webui/compare/v0.1.0...v0.1.1
