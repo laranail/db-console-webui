@@ -119,16 +119,17 @@ it('adopts with the chosen policy and says adopted, not created', function (): v
 });
 
 it('shows the new password once when adopting and applying one', function (): void {
+    $generated = testPassword();
     app()->instance(AccountManager::class, standIn([
         AccountAlreadyExists::on('local', 'app@%', ['adopt', 'adopt_and_apply']),
-        adoptedResult(OperationType::AccountRotate, passwordApplied: true, password: 'shown-once-not-real'),
+        adoptedResult(OperationType::AccountRotate, passwordApplied: true, password: $generated),
     ]));
 
     Livewire::test(AccountComponent::class)
         ->set('username', 'app')->set('host', '%')
         ->call('create')
         ->call('adopt', 'adopt_and_apply')
-        ->assertSet('generatedPassword', 'shown-once-not-real')
+        ->assertSet('generatedPassword', $generated)
         ->assertSet('flash', 'Adopted the existing account and set a new password.');
 });
 

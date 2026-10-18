@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **The adopt-and-apply test no longer carries a password literal.** Secret scanning reported it;
+  the test now takes a password generated per run from a new `testPassword()` helper in
+  `tests/Pest.php`. `tests/Architecture/NoLiteralTestCredentialsTest.php`, copied from
+  `laranail/db-console`, refuses strong-looking password literals and any literal in a position named
+  for a password, secret or token.
+
 ### Added
 
 - **`docs/release.md`**: how a version is cut, what the release workflow publishes, and what the SBOM
