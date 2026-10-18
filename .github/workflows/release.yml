@@ -38,7 +38,7 @@ jobs:
         with:
           path: .
           format: cyclonedx-json
-          output-file: db-console.cdx.json
+          output-file: db-console-webui.cdx.json
           upload-artifact: false
           upload-release-assets: false   # the release step below attaches the SBOM (avoids a duplicate asset)
 
@@ -59,4 +59,4 @@ jobs:
         with:
           generate_release_notes: true
           body_path: release-notes.md
-          files: db-console.cdx.json
+          files: db-console-webui.cdx.json

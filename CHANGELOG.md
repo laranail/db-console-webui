@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **The release SBOM is named after this package.** `release.yml` wrote and attached it as
+  `db-console.cdx.json`, copied from laranail/db-console, so v0.1.1's asset carries the other package's
+  name. Releases from now on attach `db-console-webui.cdx.json`.
+
 ## [0.1.1] - 2026-10-18
 
 ### Added
