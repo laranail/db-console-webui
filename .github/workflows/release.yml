@@ -54,8 +54,11 @@ jobs:
             f && /^## \[/ {exit}
             f {print}
           ' CHANGELOG.md > release-notes.md
-          if [ ! -s release-notes.md ]; then
-            echo "See [CHANGELOG.md](https://github.com/laranail/db-console-webui/blob/main/CHANGELOG.md) for details." > release-notes.md
+          # Every release carries a real description: no matching section is a
+          # failure, not a "See CHANGELOG" stub.
+          if ! grep -q '[^[:space:]]' release-notes.md; then
+            echo "::error file=CHANGELOG.md::No non-empty '## [$version]' section in CHANGELOG.md for tag $GITHUB_REF_NAME. Add the release notes, then re-run this workflow."
+            exit 1
           fi
 
       - name: Create GitHub release
