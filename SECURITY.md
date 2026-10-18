@@ -24,3 +24,9 @@ resolver, or the audit chain are treated as highest priority.
 > and a CVE request path already in place. Email is the fallback for anyone who would
 > rather not use GitHub.
 
+## Supply-chain posture
+
+- `composer audit` runs in CI on every pull request and weekly (Mondays 06:00 UTC).
+- Every release attaches a CycloneDX SBOM, `db-console-webui.cdx.json`, listing the runtime
+  dependencies the tag installs. See [Release](docs/release.md#the-sbom).
+- Dependabot updates dependencies and actions weekly.

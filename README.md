@@ -68,6 +68,7 @@ Full documentation is hosted at **<https://opensource.simtabi.com/documentation/
 - [Getting started](docs/getting-started.md) — the screens and what each one does.
 - [Configuration](docs/configuration.md) — every `laranail.db-console-webui.*` key.
 - [Architecture](docs/architecture.md) — the boundary, and why the UI holds no logic.
+- [Release](docs/release.md) — how a version is cut, and the SBOM each release carries.
 
 ### Reference
 

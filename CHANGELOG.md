@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **The release SBOM is named after this package.** `release.yml` wrote and attached it as
+  `db-console.cdx.json`, copied from laranail/db-console, so v0.1.1's asset carries the other package's
+  name. Releases from now on attach `db-console-webui.cdx.json`, derived from the repository name so
+  a copy of the workflow elsewhere cannot carry this one's.
+
+### Added
+
+- **`docs/release.md`**: how a version is cut, what the release workflow publishes, and what the SBOM
+  is. `SECURITY.md` gains a supply-chain section naming the SBOM, the weekly `composer audit` and
+  Dependabot.
+
 ## [0.1.1] - 2026-10-18
 
 ### Added
