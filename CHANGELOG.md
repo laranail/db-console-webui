@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **package-tools' shared literal-credential guard runs beside this package's own.** Test
+  credentials were already generated at run time; `tests/Architecture/NoLiteralCredentialsTest.php`
+  adds `laranail/package-tools`' scanner, which also reports secrets, tokens and URL passwords, so
+  a literal secret scanning would report fails the suite. The `laranail/package-tools` floor is now
+  `^0.1.9`, the release that ships it.
 - **The adopt-and-apply test no longer carries a password literal.** Secret scanning reported it;
   the test now takes a password generated per run from a new `testPassword()` helper in
   `tests/Pest.php`. `tests/Architecture/NoLiteralTestCredentialsTest.php`, copied from
