@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-10-20
+
 ### Changed
 
 - **package-tools' shared literal-credential guard runs beside this package's own.** Test
@@ -104,5 +106,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial public release.
 
-[Unreleased]: https://github.com/laranail/db-console-webui/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/laranail/db-console-webui/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/laranail/db-console-webui/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/laranail/db-console-webui/compare/v0.1.0...v0.1.1
