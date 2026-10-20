@@ -2,7 +2,7 @@
 
 This document lists breaking changes between versions. Pre-1.0, breaking changes may occur between minor versions; each is listed here with its migration step.
 
-## Unreleased
+## 0.1.2
 
 ### Route names are vendor-scoped
 
